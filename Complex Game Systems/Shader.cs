@@ -1,60 +1,61 @@
 ﻿using OpenTK.Graphics.OpenGL;
 
-
-
-public sealed class Shader
+namespace ComplexGameSystems
 {
-    private readonly int handle;
-
-    public int Handle { get { return handle; } }
-
-    public Shader(ShaderType type, string code)
+    public sealed class Shader
     {
-        // create shader object
-        handle = GL.CreateShader(type);
+        private readonly int handle;
 
-        // set source and compile shader
-        GL.ShaderSource(handle, code);
-        GL.CompileShader(handle);
-    }
-}
+        public int Handle { get { return handle; } }
 
-public sealed class ShaderProgram
-{
-    private readonly int handle;
+        public Shader(ShaderType type, string code)
+        {
+            // create shader object
+            handle = GL.CreateShader(type);
 
-    public ShaderProgram(params Shader[] shaders)
-    {
-        // create program object
-        handle = GL.CreateProgram();
-
-        // assign all shaders
-        foreach (var shader in shaders)
-            GL.AttachShader(handle, shader.Handle);
-
-        // link program (effectively compiles it)
-        GL.LinkProgram(handle);
-
-        // detach shaders
-        foreach (var shader in shaders)
-            GL.DetachShader(handle, shader.Handle);
+            // set source and compile shader
+            GL.ShaderSource(handle, code);
+            GL.CompileShader(handle);
+        }
     }
 
-    public void Use()
+    public sealed class ShaderProgram
     {
-        // activate this program to be used
-        GL.UseProgram(handle);
-    }
+        private readonly int handle;
 
-    public int GetAttributeLocation(string name)
-    {
-        // get the location of a vertex attribute
-        return GL.GetAttribLocation(handle, name);
-    }
+        public ShaderProgram(params Shader[] shaders)
+        {
+            // create program object
+            handle = GL.CreateProgram();
 
-    public int GetUniformLocation(string name)
-    {
-        // get the location of a uniform variable
-        return GL.GetUniformLocation(handle, name);
+            // assign all shaders
+            foreach (var shader in shaders)
+                GL.AttachShader(handle, shader.Handle);
+
+            // link program (effectively compiles it)
+            GL.LinkProgram(handle);
+
+            // detach shaders
+            foreach (var shader in shaders)
+                GL.DetachShader(handle, shader.Handle);
+        }
+
+        public void Use()
+        {
+            // activate this program to be used
+            GL.UseProgram(handle);
+        }
+
+        public int GetAttributeLocation(string name)
+        {
+            // get the location of a vertex attribute
+            return GL.GetAttribLocation(handle, name);
+        }
+
+        public int GetUniformLocation(string name)
+        {
+            // get the location of a uniform variable
+            return GL.GetUniformLocation(handle, name);
+        }
     }
 }

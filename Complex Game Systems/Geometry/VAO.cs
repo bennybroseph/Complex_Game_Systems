@@ -1,34 +1,35 @@
 ﻿using OpenTK.Graphics.OpenGL;
 
-
-
-sealed class VAO<TVertex> where TVertex : struct
+namespace ComplexGameSystems.Geometry
 {
-    private readonly int handle;
-
-    public VAO(VBO<TVertex> vertexBuffer, ShaderProgram program, params VertexAttribute[] attributes)
+    sealed class VAO<TVertex> where TVertex : struct
     {
-        // create new vertex array object
-        GL.GenVertexArrays(1, out handle);
+        private readonly int handle;
 
-        // bind the object so we can modify it
-        Bind();
+        public VAO(VBO<TVertex> vertexBuffer, ShaderProgram program, params VertexAttribute[] attributes)
+        {
+            // create new vertex array object
+            GL.GenVertexArrays(1, out handle);
 
-        // bind the vertex buffer object
-        vertexBuffer.Bind();
+            // bind the object so we can modify it
+            Bind();
 
-        // set all attributes
-        foreach (var attribute in attributes)
-            attribute.Set(program);
+            // bind the vertex buffer object
+            vertexBuffer.Bind();
 
-        // unbind objects to reset state
-        GL.BindVertexArray(0);
-        GL.BindBuffer(BufferTarget.ArrayBuffer, 0);
-    }
+            // set all attributes
+            foreach (var attribute in attributes)
+                attribute.Set(program);
 
-    public void Bind()
-    {
-        // bind for usage (modification or rendering)
-        GL.BindVertexArray(handle);
+            // unbind objects to reset state
+            GL.BindVertexArray(0);
+            GL.BindBuffer(BufferTarget.ArrayBuffer, 0);
+        }
+
+        public void Bind()
+        {
+            // bind for usage (modification or rendering)
+            GL.BindVertexArray(handle);
+        }
     }
 }

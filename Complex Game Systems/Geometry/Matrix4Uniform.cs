@@ -1,24 +1,27 @@
 ﻿using OpenTK;
 using OpenTK.Graphics.OpenGL;
 
-sealed class Matrix4Uniform
+namespace ComplexGameSystems.Geometry
 {
-    private readonly string name;
-    private Matrix4 matrix;
-
-    public Matrix4 Matrix { get { return matrix; } set { matrix = value; } }
-
-    public Matrix4Uniform(string name)
+    sealed class Matrix4Uniform
     {
-        this.name = name;
-    }
+        private readonly string name;
+        private Matrix4 matrix;
 
-    public void Set(ShaderProgram program)
-    {
-        // get uniform location
-        var i = program.GetUniformLocation(name);
+        public Matrix4 Matrix { get { return matrix; } set { matrix = value; } }
 
-        // set uniform value
-        GL.UniformMatrix4(i, false, ref matrix);
+        public Matrix4Uniform(string name)
+        {
+            this.name = name;
+        }
+
+        public void Set(ShaderProgram program)
+        {
+            // get uniform location
+            var i = program.GetUniformLocation(name);
+
+            // set uniform value
+            GL.UniformMatrix4(i, false, ref matrix);
+        }
     }
 }

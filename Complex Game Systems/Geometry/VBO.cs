@@ -4,37 +4,40 @@ using System.Linq;
 
 using OpenTK.Graphics.OpenGL;
 
-public sealed class VBO<TVertex> where TVertex : struct
+namespace ComplexGameSystems.Geometry
 {
-    private readonly int m_VertexSize;
-    private readonly List<TVertex> m_Vertexes;
-
-    private readonly int m_Handle;
-
-    public VBO(IEnumerable<TVertex> vertexes, int vertexSize)
+    public sealed class VBO<TVertex> where TVertex : struct
     {
-        m_VertexSize = vertexSize;
-        m_Vertexes = vertexes.ToList();
+        private readonly int m_VertexSize;
+        private readonly List<TVertex> m_Vertexes;
 
-        m_Handle = GL.GenBuffer();
-    }
+        private readonly int m_Handle;
 
-    public void Bind()
-    {
-        GL.BindBuffer(BufferTarget.ArrayBuffer, m_Handle);
-    }
+        public VBO(IEnumerable<TVertex> vertexes, int vertexSize)
+        {
+            m_VertexSize = vertexSize;
+            m_Vertexes = vertexes.ToList();
 
-    public void BufferData()
-    {
-        GL.BufferData(
-            BufferTarget.ArrayBuffer,
-            (IntPtr)(m_VertexSize * m_Vertexes.Count),
-            m_Vertexes.ToArray(),
-            BufferUsageHint.StreamDraw);
-    }
+            m_Handle = GL.GenBuffer();
+        }
 
-    public void Draw()
-    {
-        GL.DrawArrays(PrimitiveType.Triangles, 0, m_Vertexes.Count);
+        public void Bind()
+        {
+            GL.BindBuffer(BufferTarget.ArrayBuffer, m_Handle);
+        }
+
+        public void BufferData()
+        {
+            GL.BufferData(
+                BufferTarget.ArrayBuffer,
+                (IntPtr)(m_VertexSize * m_Vertexes.Count),
+                m_Vertexes.ToArray(),
+                BufferUsageHint.StreamDraw);
+        }
+
+        public void Draw()
+        {
+            GL.DrawArrays(PrimitiveType.Triangles, 0, m_Vertexes.Count);
+        }
     }
 }

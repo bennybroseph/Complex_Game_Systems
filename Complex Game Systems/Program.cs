@@ -1,24 +1,43 @@
 ﻿using System;
 
+#if DEBUG
+using System.Runtime.InteropServices;
+#endif
+
 using OpenTK;
 using OpenTK.Graphics;
 
-public class Program
+namespace ComplexGameSystems
 {
-    private static void Main(string[] args)
+    internal static class Program
     {
-        var window = new GameWindow(
-            1600,
-            900,
-            GraphicsMode.Default,
-            "Test Application",
-            GameWindowFlags.Default,
-            DisplayDevice.Default);
-        var context = new GraphicsContext(GraphicsMode.Default, window.WindowInfo);
 
-        window.Run(60, 60);
+#if DEBUG
+        [DllImport("kernel32.dll", SetLastError = true)]
+        [return: MarshalAs(UnmanagedType.Bool)]
+        private static extern bool AllocConsole();
+#endif
 
-        Console.WriteLine("Program Terminated...");
+        private static void Main(string[] args)
+        {
+
+#if DEBUG
+            AllocConsole();
+#endif
+
+            var window = new GameWindow(
+                1600,
+                900,
+                GraphicsMode.Default,
+                "Test Application",
+                GameWindowFlags.Default,
+                DisplayDevice.Default);
+            var context = new GraphicsContext(GraphicsMode.Default, window.WindowInfo);
+
+            window.Run(60, 60);
+
+            Console.WriteLine("Program Terminated...");
+        }
     }
 }
 
