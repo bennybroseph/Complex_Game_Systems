@@ -1,4 +1,6 @@
-﻿namespace ComplexGameSystems
+﻿using System.Runtime.CompilerServices;
+
+namespace ComplexGameSystems
 {
     using System;
     using System.Runtime.InteropServices;
@@ -58,8 +60,6 @@
             }
 
             bool isPlaying;
-
-            channel.isValid();
             var result = channel.isPlaying(out isPlaying);
 
             if (isPlaying)
@@ -78,6 +78,35 @@
             Channel channel, Sound sound, MODE mode = MODE.DEFAULT, int loopCount = -1)
         {
             return PlaySound(channel, sound, 0u, mode, loopCount);
+        }
+
+        public static RESULT Play(Channel channel)
+        {
+            return channel.setPaused(false);
+        }
+        public static RESULT Pause(Channel channel)
+        {
+            return channel.setPaused(true);
+        }
+        public static RESULT TogglePause(Channel channel)
+        {
+            bool paused;
+            var result = channel.getPaused(out paused);
+            if (result != RESULT.OK)
+                return result;
+
+            return channel.setPaused(!paused);
+        }
+
+        private static RESULT LogError(
+            object obj, RESULT result,
+            [CallerLineNumber] int lineNumber = 0,
+            [CallerMemberName] string caller = null,
+            [CallerFilePath] string filePath = null)
+        {
+            Debug.LogError(obj, lineNumber, caller, filePath);
+
+            return result;
         }
     }
 }
