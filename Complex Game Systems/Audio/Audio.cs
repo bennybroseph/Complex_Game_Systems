@@ -1,6 +1,8 @@
 ﻿using System;
 using System.Runtime.InteropServices;
 
+using ComplexGameSystems.Utility;
+
 namespace ComplexGameSystems
 {
     public class Audio
@@ -21,11 +23,7 @@ namespace ComplexGameSystems
             {
                 if (s_Self == null)
                 {
-                    //TODO: Write Debug Class
-                    var oldColor = Console.ForegroundColor;
-                    Console.ForegroundColor = ConsoleColor.Red;
-                    Console.WriteLine("Audio was not initialized. Initializing...");
-                    Console.ForegroundColor = oldColor;
+                    Debug.LogWarning("Audio was not initialized. Initializing...");
 
                     s_Self = new Audio();
                 }
@@ -37,6 +35,8 @@ namespace ComplexGameSystems
         {
             if (s_Self == null)
             {
+                Debug.Log("Initializing Audio...");
+
                 s_Self = new Audio();
                 return true;
             }
@@ -51,18 +51,18 @@ namespace ComplexGameSystems
         {
             if (Environment.Is64BitProcess)
             {
-                Console.WriteLine("Loading 64bit FMOD Library");
+                Debug.Log("Loading 64bit FMOD Library");
                 LoadLibrary("FMOD\\64\\fmod.dll");
             }
             else
             {
-                Console.WriteLine("Loading 32bit FMOD Library");
+                Debug.Log("Loading 32bit FMOD Library");
                 LoadLibrary("FMOD\\32\\fmod.dll");
             }
 
             FMOD.Factory.System_Create(out m_FMODSystem);
 
-            m_FMODSystem.setDSPBufferSize(1024, 10);
+            m_FMODSystem.setDSPBufferSize(1024, 4);
             m_FMODSystem.init(32, FMOD.INITFLAGS.NORMAL, (IntPtr)0);
 
             m_Songs = new FMOD.Sound[NUM_SONGS];
@@ -74,7 +74,7 @@ namespace ComplexGameSystems
         {
             var result = m_FMODSystem.createStream(
                 "Content/Music/" + name + ".mp3", FMOD.MODE.DEFAULT, out m_Songs[songID]);
-            Console.WriteLine("Loading " + songID + ", got result " + result);
+            Debug.Log("Loading " + songID + ", got result " + result);
         }
 
         public static bool IsPlaying()
@@ -89,8 +89,6 @@ namespace ComplexGameSystems
 
         public static void Play(int songId)
         {
-            Console.WriteLine("Play(" + songId + ")");
-
             if (self.m_CurrentSongID != songId)
             {
                 Stop();

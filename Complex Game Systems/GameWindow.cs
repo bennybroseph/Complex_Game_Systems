@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.IO;
 
 using ComplexGameSystems.Geometry;
+using ComplexGameSystems.Utility;
 
 using OpenTK;
 using OpenTK.Graphics;
@@ -40,7 +41,7 @@ namespace ComplexGameSystems
 
                 base(width, height, mode, title, flags, displayDevice, major, minor, contextFlags)
         {
-            Console.WriteLine("OpenGL Version: " + GL.GetString(StringName.Version));
+            Debug.Log("OpenGL Version: " + GL.GetString(StringName.Version));
         }
 
         protected override void OnResize(EventArgs eventArgs)
@@ -81,14 +82,12 @@ namespace ComplexGameSystems
                 {
                     Matrix = Matrix4.CreatePerspectiveFieldOfView(MathHelper.PiOver2, 16f / 9, 0.1f, 100f)
                 };
-
-            Audio.Play(0);
         }
 
         protected override void OnUpdateFrame(FrameEventArgs eventArgs)
         {
             //Console.WriteLine(eventArgs.Time);
-
+            Audio.Play(0);
         }
 
         private void OnRenderFrameEvent(object o, FrameEventArgs eventArgs)

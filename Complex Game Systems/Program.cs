@@ -7,6 +7,8 @@ using System.Runtime.InteropServices;
 using OpenTK;
 using OpenTK.Graphics;
 
+using ComplexGameSystems.Utility;
+
 namespace ComplexGameSystems
 {
     internal static class Program
@@ -20,6 +22,7 @@ namespace ComplexGameSystems
 
         private static void Main(string[] args)
         {
+            Debug.Init();
 
 #if DEBUG
             AllocConsole();
