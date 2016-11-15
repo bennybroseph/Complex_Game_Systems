@@ -5,23 +5,25 @@ namespace ComplexGameSystems.Geometry
 {
     sealed class Matrix4Uniform
     {
-        private readonly string name;
-        private Matrix4 matrix;
+        private readonly string m_Name;
+        private Matrix4 m_Matrix;
 
-        public Matrix4 Matrix { get { return matrix; } set { matrix = value; } }
+        public Matrix4 matrix { get { return m_Matrix; } set { m_Matrix = value; } }
 
         public Matrix4Uniform(string name)
         {
-            this.name = name;
+            this.m_Name = name;
         }
 
         public void Set(ShaderProgram program)
         {
             // get uniform location
-            var i = program.GetUniformLocation(name);
+            var location = program.GetUniformLocation(m_Name);
+
+            var mvp = m_Matrix * Matrix4.CreateRotationX(-45f);
 
             // set uniform value
-            GL.UniformMatrix4(i, false, ref matrix);
+            GL.UniformMatrix4(location, false, ref mvp);
         }
     }
 }

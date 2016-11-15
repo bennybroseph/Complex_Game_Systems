@@ -1,53 +1,21 @@
-﻿using System;
-using System.Runtime.InteropServices;
-
-using ComplexGameSystems.Utility;
-
-namespace ComplexGameSystems
+﻿namespace ComplexGameSystems
 {
-    public class Audio
+    using System;
+    using System.Runtime.InteropServices;
+    using System.Runtime.CompilerServices;
+
+    using FMOD;
+
+    using Debug = Utility.Debug;
+
+    public static class Audio
     {
-        public const int NUM_SONGS = 10;
-
-        private FMOD.System m_FMODSystem;
-        private FMOD.Channel m_Channel;
-        private FMOD.Sound[] m_Songs;
-
-        private int m_CurrentSongID = -1;
-
-        private static Audio s_Self;
-
-        public static Audio self
-        {
-            get
-            {
-                if (s_Self == null)
-                {
-                    Debug.LogWarning("Audio was not initialized. Initializing...");
-
-                    s_Self = new Audio();
-                }
-                return s_Self;
-            }
-        }
-
-        public static bool Init()
-        {
-            if (s_Self == null)
-            {
-                Debug.Log("Initializing Audio...");
-
-                s_Self = new Audio();
-                return true;
-            }
-
-            return false;
-        }
-
         [DllImport("kernel32.dll")]
-        public static extern IntPtr LoadLibrary(string dllToLoad);
+        private static extern IntPtr LoadLibrary(string dllToLoad);
 
-        private Audio()
+        private static System m_FMODSystem;
+
+        public static void Init()
         {
             if (Environment.Is64BitProcess)
             {
@@ -60,63 +28,83 @@ namespace ComplexGameSystems
                 LoadLibrary("FMOD\\32\\fmod.dll");
             }
 
-            FMOD.Factory.System_Create(out m_FMODSystem);
+            Debug.Log("Creating System... Result: " + Factory.System_Create(out m_FMODSystem));
 
-            m_FMODSystem.setDSPBufferSize(1024, 4);
-            m_FMODSystem.init(32, FMOD.INITFLAGS.NORMAL, (IntPtr)0);
-
-            m_Songs = new FMOD.Sound[NUM_SONGS];
-
-            LoadSong(0, "Emergency");
+            Debug.Log("Setting DSP Buffer Size... Result: " + m_FMODSystem.setDSPBufferSize(1024, 4));
+            Debug.Log(
+                "Initializing System... Result: " + m_FMODSystem.init(32, INITFLAGS.NORMAL, (IntPtr)0));
         }
 
-        private void LoadSong(int songID, string name)
+        public static RESULT LoadSound(string path, out Sound sound)
         {
-            var result = m_FMODSystem.createStream(
-                "Content/Music/" + name + ".mp3", FMOD.MODE.DEFAULT, out m_Songs[songID]);
-            Debug.Log("Loading " + songID + ", got result " + result);
+            var result = m_FMODSystem.createStream(path, MODE.DEFAULT, out sound);
+
+            Debug.Log("Loading " + path + "... Result: " + result);
+
+            return result;
         }
 
-        public static bool IsPlaying()
+        public static RESULT PlaySound(
+            ref Channel channel,
+            Sound sound,
+            uint startTime,
+            MODE mode = MODE.DEFAULT,
+            int loopCount = -1)
         {
-            var isPlaying = false;
+            RESULT result;
 
-            if (self.m_Channel != null)
-                self.m_Channel.isPlaying(out isPlaying);
-
-            return isPlaying;
-        }
-
-        public static void Play(int songId)
-        {
-            if (self.m_CurrentSongID != songId)
+            if (channel != null)
             {
-                Stop();
+                bool isPlaying;
+                result = channel.isPlaying(out isPlaying);
 
-                if (songId >= 0 && songId < NUM_SONGS && self.m_Songs[songId] != null)
-                {
-                    self.m_FMODSystem.playSound(self.m_Songs[songId], null, false, out self.m_Channel);
-                    UpdateVolume();
-                    self.m_Channel.setMode(FMOD.MODE.LOOP_NORMAL);
-                    self.m_Channel.setLoopCount(-1);
-
-                    self.m_CurrentSongID = songId;
-                }
+                if (isPlaying)
+                    channel.stop();
             }
+
+            result = m_FMODSystem.playSound(sound, null, false, out channel);
+
+            if (startTime != 0u)
+                channel.setPosition(startTime, TIMEUNIT.MS);
+            channel.setMode(mode);
+            channel.setLoopCount(loopCount);
+
+            return result;
+
+        }
+        public static RESULT PlaySound(
+            ref Channel channel, Sound sound, MODE mode = MODE.DEFAULT, int loopCount = -1)
+        {
+            return PlaySound(ref channel, sound, 0u, mode, loopCount);
         }
 
-        public static void UpdateVolume()
+        public static RESULT Play(Channel channel)
         {
-            if (self.m_Channel != null)
-                self.m_Channel.setVolume(1f);
+            return channel.setPaused(false);
+        }
+        public static RESULT Pause(Channel channel)
+        {
+            return channel.setPaused(true);
+        }
+        public static RESULT TogglePause(Channel channel)
+        {
+            bool paused;
+            var result = channel.getPaused(out paused);
+            if (result != RESULT.OK)
+                return result;
+
+            return channel.setPaused(!paused);
         }
 
-        public static void Stop()
+        private static RESULT LogError(
+            object obj, RESULT result,
+            [CallerLineNumber] int lineNumber = 0,
+            [CallerMemberName] string caller = null,
+            [CallerFilePath] string filePath = null)
         {
-            if (IsPlaying())
-                self.m_Channel.stop();
+            Debug.LogError(obj, lineNumber, caller, filePath);
 
-            self.m_CurrentSongID = -1;
+            return result;
         }
     }
 }

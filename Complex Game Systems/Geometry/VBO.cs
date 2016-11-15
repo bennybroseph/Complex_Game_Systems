@@ -25,12 +25,16 @@ namespace ComplexGameSystems.Geometry
         {
             GL.BindBuffer(BufferTarget.ArrayBuffer, m_Handle);
         }
+        public void UnBind()
+        {
+            GL.BindBuffer(BufferTarget.ArrayBuffer, 0);
+        }
 
         public void BufferData()
         {
             GL.BufferData(
                 BufferTarget.ArrayBuffer,
-                (IntPtr)(m_VertexSize * m_Vertexes.Count),
+                (IntPtr)(m_Vertexes.Count * m_VertexSize),
                 m_Vertexes.ToArray(),
                 BufferUsageHint.StreamDraw);
         }

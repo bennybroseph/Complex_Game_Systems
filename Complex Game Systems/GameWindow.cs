@@ -1,24 +1,34 @@
-﻿using System;
-using System.Collections.Generic;
-using System.IO;
-
-using ComplexGameSystems.Geometry;
-using ComplexGameSystems.Utility;
-
-using OpenTK;
-using OpenTK.Graphics;
-using OpenTK.Graphics.OpenGL;
-
-namespace ComplexGameSystems
+﻿namespace ComplexGameSystems
 {
+    using System;
+    using System.Collections.Generic;
+    using System.IO;
+
+    using Geometry;
+    using Geometry.Shapes;
+
+    using Utility;
+
+    using OpenTK;
+    using OpenTK.Graphics;
+    using OpenTK.Graphics.OpenGL;
+
     public class GameWindow : OpenTK.GameWindow
     {
+        private Mesh<Vertex> m_Mesh;
+
+        private Texture m_Texture;
+
         private VBO<Vertex> m_VBO;
         private VAO<Vertex> m_VAO;
 
         private ShaderProgram m_ShaderProgram;
 
         private Matrix4Uniform m_ProjectionMatrixUniform;
+
+        public delegate void OnEvent(GameWindow window, EventArgs eventArgs);
+
+        public event OnEvent OnResizeEvent;
 
         public GameWindow() :
             this(
@@ -47,47 +57,55 @@ namespace ComplexGameSystems
         protected override void OnResize(EventArgs eventArgs)
         {
             GL.Viewport(0, 0, Width, Height);
+
+            if (OnResizeEvent != null)
+                OnResizeEvent.Invoke(this, eventArgs);
         }
 
         protected override void OnLoad(EventArgs eventArgs)
         {
             Audio.Init();
+            MusicPlayer.Init("Content\\Music\\Bomberman 64\\");
 
             RenderFrame += OnRenderFrameEvent;
 
-            var vertexes = new List<Vertex>
-            {
-                new Vertex(new Vector3(-1f, -1f, -1.5f), new Color4(1f, 0f, 0f, 1f)),
-                new Vertex(new Vector3(1, 1, -1.5f), new Color4(1f, 0f, 0f, 1f)),
-                new Vertex(new Vector3(1, -1, -1.5f), new Color4(1f, 0f, 0f, 1f))
-            };
-
-            m_VBO = new VBO<Vertex>(vertexes, Vertex.size);
-
-            var vertShaderCode = File.ReadAllText("Shaders/Default.vert");
+            var vertShaderCode = File.ReadAllText("Shaders/Texture.vert");
             var vertShader = new Shader(ShaderType.VertexShader, vertShaderCode);
 
-            var fragShaderCode = File.ReadAllText("Shaders/Default.frag");
+            var fragShaderCode = File.ReadAllText("Shaders/Texture.frag");
             var fragShader = new Shader(ShaderType.FragmentShader, fragShaderCode);
 
             m_ShaderProgram = new ShaderProgram(vertShader, fragShader);
 
-            m_VAO = new VAO<Vertex>(
-                m_VBO, m_ShaderProgram,
-                new VertexAttribute("vPosition", 3, VertexAttribPointerType.Float, Vertex.size, 0),
-                new VertexAttribute("vColor", 4, VertexAttribPointerType.Float, Vertex.size, 3 * 4));
+            m_Texture = new Texture(
+                "Content\\Pictures\\gradient.png", TextureMinFilter.Nearest, TextureMagFilter.Nearest);
+            m_Texture.Bind();
+
+            var location = m_ShaderProgram.GetUniformLocation("diffuseMap");
+            GL.ProgramUniform1(m_ShaderProgram.handle, location, 0);
+
+            location = m_ShaderProgram.GetUniformLocation("lightDirection");
+            GL.ProgramUniform3(m_ShaderProgram.handle, location, 0, -1, 0);
+
+            m_Mesh = Plane.GetMesh();
+
+            m_Mesh.Bind();
+            m_Mesh.BufferData(m_ShaderProgram);
+            m_Mesh.UnBind();
 
             m_ProjectionMatrixUniform =
-                new Matrix4Uniform("projectionMatrix")
+                new Matrix4Uniform("ProjectionMatrix")
                 {
-                    Matrix = Matrix4.CreatePerspectiveFieldOfView(MathHelper.PiOver2, 16f / 9, 0.1f, 100f)
+                    matrix = Matrix4.CreatePerspectiveFieldOfView(MathHelper.PiOver2, 16f / 9, 0.1f, 100f)
                 };
+
+            MusicPlayer.Play();
         }
 
         protected override void OnUpdateFrame(FrameEventArgs eventArgs)
         {
             //Console.WriteLine(eventArgs.Time);
-            Audio.Play(0);
+            //Audio.Play();
         }
 
         private void OnRenderFrameEvent(object o, FrameEventArgs eventArgs)
@@ -98,11 +116,16 @@ namespace ComplexGameSystems
             m_ShaderProgram.Use();
             m_ProjectionMatrixUniform.Set(m_ShaderProgram);
 
-            m_VBO.Bind();
-            m_VAO.Bind();
-
-            m_VBO.BufferData();
-            m_VBO.Draw();
+            GL.ActiveTexture(TextureUnit.Texture0);
+            m_Texture.Bind();
+            {
+                m_Mesh.Bind();
+                {
+                    m_Mesh.Draw();
+                }
+                m_Mesh.UnBind();
+            }
+            m_Texture.UnBind();
 
             SwapBuffers();
         }

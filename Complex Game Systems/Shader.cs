@@ -1,12 +1,12 @@
-﻿using OpenTK.Graphics.OpenGL;
+﻿using ComplexGameSystems.Utility;
+
+using OpenTK.Graphics.OpenGL;
 
 namespace ComplexGameSystems
 {
     public sealed class Shader
     {
-        private readonly int handle;
-
-        public int Handle { get { return handle; } }
+        public int handle { get; }
 
         public Shader(ShaderType type, string code)
         {
@@ -21,7 +21,7 @@ namespace ComplexGameSystems
 
     public sealed class ShaderProgram
     {
-        private readonly int handle;
+        public int handle { get; }
 
         public ShaderProgram(params Shader[] shaders)
         {
@@ -30,14 +30,20 @@ namespace ComplexGameSystems
 
             // assign all shaders
             foreach (var shader in shaders)
-                GL.AttachShader(handle, shader.Handle);
+                GL.AttachShader(handle, shader.handle);
 
             // link program (effectively compiles it)
             GL.LinkProgram(handle);
 
+            int status;
+            GL.GetProgram(handle, ProgramParameter.LinkStatus, out status);
+            if (status == 0)
+                Debug.Log(
+                    string.Format("Error linking program: {0}", GL.GetProgramInfoLog(handle)));
+
             // detach shaders
             foreach (var shader in shaders)
-                GL.DetachShader(handle, shader.Handle);
+                GL.DetachShader(handle, shader.handle);
         }
 
         public void Use()
