@@ -82,7 +82,10 @@
         private static RESULT PlaySound(Sound sound)
         {
             var result = Audio.PlaySound(ref s_Channel, sound, MODE.DEFAULT, 0);
-            s_Equalizer = new Equalizer(s_Channel);
+            if (s_Equalizer == null)
+                s_Equalizer = new Equalizer(s_Channel);
+            else
+                s_Equalizer.LinkChannel(s_Channel);
 
             return result;
         }
@@ -128,7 +131,7 @@
         }
         public static void OnMouseMove(MouseMoveEventArgs e)
         {
-            s_IsSelected = e.Y <= GameWindow.main.Height - 95f && e.Y >= GameWindow.main.Height - 112f;
+            s_IsSelected = e.Y <= GameWindow.main.Height - 70f && e.Y >= GameWindow.main.Height - 87f;
         }
 
         public static void Draw()
@@ -147,14 +150,14 @@
             var extraSpace = s_IsSelected ? 5 : 0;
 
             Gizmos.DrawRectangle(
-                new Vector2(0f, GameWindow.main.Height - 100f),
-                new Vector2(GameWindow.main.Width, GameWindow.main.Height - 102f - extraSpace),
+                new Vector2(0f, GameWindow.main.Height - 75f),
+                new Vector2(GameWindow.main.Width, GameWindow.main.Height - 77f - extraSpace),
                 Color4.BlueViolet,
                 Color4.BlueViolet);
 
             Gizmos.DrawRectangle(
-                new Vector2(0f, GameWindow.main.Height - 100f),
-                new Vector2(proportion * GameWindow.main.Width, GameWindow.main.Height - 102f - extraSpace),
+                new Vector2(0f, GameWindow.main.Height - 75f),
+                new Vector2(proportion * GameWindow.main.Width, GameWindow.main.Height - 77f - extraSpace),
                 Color4.White,
                 Color4.White);
 

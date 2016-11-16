@@ -69,7 +69,8 @@
             var location = shader.GetUniformLocation("ProjectionMatrix");
 
             var tempMatrix = Camera.main.modelViewProjection * matrix;
-            //matrix *= Matrix4.CreateRotationX(0.01f);
+            //matrix = matrix.ClearRotation();
+            matrix *= Matrix4.CreateRotationX(0.01f);
 
             // set uniform value
             GL.UniformMatrix4(location, false, ref tempMatrix);

@@ -28,9 +28,9 @@
 
         private static IEnumerable<Vertex> GenVertexes(float segments)
         {
-            for (var x = 0; x < segments; ++x)
+            for (var x = 0f; x < segments; ++x)
             {
-                for (var y = 0; y < segments; ++y)
+                for (var y = 0f; y < segments; ++y)
                 {
                     yield return
                         new Vertex(

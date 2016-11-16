@@ -7,7 +7,7 @@
     {
         public override void Update()
         {
-            m_PositionMatrix *= Matrix4.CreateRotationY(-0.001f);
+            //m_PositionMatrix *= Matrix4.CreateRotationY(-0.001f);
         }
 
         public void OnKeyDown(KeyboardKeyEventArgs e)

@@ -75,7 +75,7 @@
         protected override void OnLoad(EventArgs eventArgs)
         {
             Audio.Init();
-            MusicPlayer.Init("Content\\Music");
+            MusicPlayer.Init("Content\\Music\\Bomberman 64");
 
             RenderFrame += OnRenderFrameEvent;
 
@@ -112,7 +112,7 @@
 
             m_Camera = new StaticCamera();
             m_Camera.SetPerspective(MathHelper.Pi * 0.25f, 16f / 9f, 0.1f, 75f);
-            m_Camera.SetLookAt(new Vector3(0f, 5f, 10f), Vector3.Zero, new Vector3(0f, 1f, 0f));
+            m_Camera.SetLookAt(new Vector3(0f, 5f, -10f), Vector3.Zero, new Vector3(0f, 1f, 0f));
 
             MusicPlayer.Play();
         }
