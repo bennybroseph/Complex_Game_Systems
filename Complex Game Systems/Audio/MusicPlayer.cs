@@ -81,14 +81,16 @@
 
         private static RESULT PlaySound(Sound sound)
         {
-            return Audio.PlaySound(ref s_Channel, sound, MODE.DEFAULT, 0);
+            var result = Audio.PlaySound(ref s_Channel, sound, MODE.DEFAULT, 0);
+            s_Equalizer = new Equalizer(s_Channel);
+
+            return result;
         }
 
         private static RESULT CreateChannel()
         {
             var result = PlaySound(s_MusicList[0]);
             s_CurrentIndex = 0;
-            s_Equalizer = new Equalizer(s_Channel);
 
             return result;
         }
@@ -105,7 +107,7 @@
             sound.getLength(out length, TIMEUNIT.MS);
 
             if (position >= length)
-                PlaySound(s_MusicList[++s_CurrentIndex]);
+                NextTrack();
 
             s_Equalizer.Update();
         }
@@ -126,7 +128,7 @@
         }
         public static void OnMouseMove(MouseMoveEventArgs e)
         {
-            s_IsSelected = e.Y <= GameWindow.main.Height - 195f && e.Y >= GameWindow.main.Height - 212f;
+            s_IsSelected = e.Y <= GameWindow.main.Height - 95f && e.Y >= GameWindow.main.Height - 112f;
         }
 
         public static void Draw()
@@ -145,14 +147,14 @@
             var extraSpace = s_IsSelected ? 5 : 0;
 
             Gizmos.DrawRectangle(
-                new Vector2(0f, GameWindow.main.Height - 200f),
-                new Vector2(GameWindow.main.Width, GameWindow.main.Height - 202f - extraSpace),
+                new Vector2(0f, GameWindow.main.Height - 100f),
+                new Vector2(GameWindow.main.Width, GameWindow.main.Height - 102f - extraSpace),
                 Color4.BlueViolet,
                 Color4.BlueViolet);
 
             Gizmos.DrawRectangle(
-                new Vector2(0f, GameWindow.main.Height - 200f),
-                new Vector2(proportion * GameWindow.main.Width, GameWindow.main.Height - 202f - extraSpace),
+                new Vector2(0f, GameWindow.main.Height - 100f),
+                new Vector2(proportion * GameWindow.main.Width, GameWindow.main.Height - 102f - extraSpace),
                 Color4.White,
                 Color4.White);
 

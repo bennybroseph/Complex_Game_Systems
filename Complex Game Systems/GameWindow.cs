@@ -75,7 +75,7 @@
         protected override void OnLoad(EventArgs eventArgs)
         {
             Audio.Init();
-            MusicPlayer.Init("Content\\Music\\Bomberman 64\\");
+            MusicPlayer.Init("Content\\Music");
 
             RenderFrame += OnRenderFrameEvent;
 

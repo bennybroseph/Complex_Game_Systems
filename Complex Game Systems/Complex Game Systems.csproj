@@ -55,7 +55,7 @@
     <Compile Include="Audio\Audio.cs" />
     <Compile Include="Audio\MusicPlayer.cs" />
     <Compile Include="Camera.cs" />
-    <Compile Include="Equalizer.cs" />
+    <Compile Include="Audio\Equalizer.cs" />
     <Compile Include="FMOD\fmod.cs" />
     <Compile Include="FMOD\fmod_dsp.cs" />
     <Compile Include="FMOD\fmod_errors.cs" />
@@ -99,6 +99,9 @@
     </None>
   </ItemGroup>
   <ItemGroup>
+    <Content Include="Content\Music\Extreme bas test, bazz test , base test.mp3">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Content>
     <Content Include="Content\Music\Bomberman 64\01-advertise.mp3">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </Content>
@@ -199,6 +202,9 @@
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </Content>
     <Content Include="Content\Music\Emergency.mp3">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Content>
+    <Content Include="Content\Music\Super Treble Test.mp3">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </Content>
     <Content Include="Content\Pictures\Brock.jpg">
