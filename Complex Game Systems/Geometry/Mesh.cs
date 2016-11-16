@@ -37,7 +37,7 @@
         {
             vbo.UnBind();
             vao.UnBind();
-            ibo.UnBind();
+            IBO.UnBind();
         }
 
         public void BufferData(ShaderProgram shader)

@@ -3,7 +3,7 @@ using OpenTK.Graphics.OpenGL;
 
 namespace ComplexGameSystems.Geometry
 {
-    sealed class Matrix4Uniform
+    public sealed class Matrix4Uniform
     {
         private readonly string m_Name;
         private Matrix4 m_Matrix;
@@ -12,6 +12,7 @@ namespace ComplexGameSystems.Geometry
 
         public Matrix4Uniform(string name)
         {
+            m_Matrix = Matrix4.Identity;
             this.m_Name = name;
         }
 
@@ -20,10 +21,8 @@ namespace ComplexGameSystems.Geometry
             // get uniform location
             var location = program.GetUniformLocation(m_Name);
 
-            var mvp = m_Matrix * Matrix4.CreateRotationX(-45f);
-
             // set uniform value
-            GL.UniformMatrix4(location, false, ref mvp);
+            GL.UniformMatrix4(location, false, ref m_Matrix);
         }
     }
 }

@@ -25,7 +25,7 @@
         {
             GL.BindBuffer(BufferTarget.ElementArrayBuffer, m_Handle);
         }
-        public void UnBind()
+        public static void UnBind()
         {
             GL.BindBuffer(BufferTarget.ElementArrayBuffer, 0);
         }

@@ -1,7 +1,6 @@
 ﻿namespace ComplexGameSystems
 {
     using System;
-    using System.Collections.Generic;
     using System.IO;
 
     using Geometry;
@@ -12,10 +11,11 @@
     using OpenTK;
     using OpenTK.Graphics;
     using OpenTK.Graphics.OpenGL;
+    using OpenTK.Input;
 
     public class GameWindow : OpenTK.GameWindow
     {
-        private Mesh<Vertex> m_Mesh;
+        private Model<Vertex> m_Model;
 
         private Texture m_Texture;
 
@@ -24,22 +24,30 @@
 
         private ShaderProgram m_ShaderProgram;
 
+        private StaticCamera m_Camera;
         private Matrix4Uniform m_ProjectionMatrixUniform;
 
         public delegate void OnEvent(GameWindow window, EventArgs eventArgs);
 
         public event OnEvent OnResizeEvent;
 
+        public static GameWindow main { get; protected set; }
+
         public GameWindow() :
             this(
-            1600, 900,
+            1600,
+            900,
             GraphicsMode.Default,
             "Test Window",
             GameWindowFlags.Default,
             DisplayDevice.Default,
-            3, 0,
+            3,
+            0,
             GraphicsContextFlags.Default)
-        { }
+        {
+            if (main == null)
+                main = this;
+        }
         public GameWindow(
             int width, int height,
             GraphicsMode mode,
@@ -52,6 +60,8 @@
                 base(width, height, mode, title, flags, displayDevice, major, minor, contextFlags)
         {
             Debug.Log("OpenGL Version: " + GL.GetString(StringName.Version));
+            if (main == null)
+                main = this;
         }
 
         protected override void OnResize(EventArgs eventArgs)
@@ -78,7 +88,7 @@
             m_ShaderProgram = new ShaderProgram(vertShader, fragShader);
 
             m_Texture = new Texture(
-                "Content\\Pictures\\gradient.png", TextureMinFilter.Nearest, TextureMagFilter.Nearest);
+                "Content\\Pictures\\Brock.jpg", TextureMinFilter.Nearest, TextureMagFilter.Nearest);
             m_Texture.Bind();
 
             var location = m_ShaderProgram.GetUniformLocation("diffuseMap");
@@ -87,25 +97,45 @@
             location = m_ShaderProgram.GetUniformLocation("lightDirection");
             GL.ProgramUniform3(m_ShaderProgram.handle, location, 0, -1, 0);
 
-            m_Mesh = Plane.GetMesh();
+            var mesh = Plane.GetMesh();
 
-            m_Mesh.Bind();
-            m_Mesh.BufferData(m_ShaderProgram);
-            m_Mesh.UnBind();
+            m_Model = new Model<Vertex>
+            {
+                matrix = Matrix4.Identity,
+                mesh = mesh,
+                shader = m_ShaderProgram,
+                diffuseTexture = m_Texture
+            };
+            m_Model.Bind();
+            m_Model.BufferData();
+            m_Model.UnBind();
 
-            m_ProjectionMatrixUniform =
-                new Matrix4Uniform("ProjectionMatrix")
-                {
-                    matrix = Matrix4.CreatePerspectiveFieldOfView(MathHelper.PiOver2, 16f / 9, 0.1f, 100f)
-                };
+            m_Camera = new StaticCamera();
+            m_Camera.SetPerspective(MathHelper.Pi * 0.25f, 16f / 9f, 0.1f, 75f);
+            m_Camera.SetLookAt(new Vector3(0f, 5f, 10f), Vector3.Zero, new Vector3(0f, 1f, 0f));
 
             MusicPlayer.Play();
         }
 
         protected override void OnUpdateFrame(FrameEventArgs eventArgs)
         {
-            //Console.WriteLine(eventArgs.Time);
-            //Audio.Play();
+            m_Camera.Update();
+            MusicPlayer.Update();
+        }
+
+        protected override void OnKeyDown(KeyboardKeyEventArgs e)
+        {
+            m_Camera.OnKeyDown(e);
+        }
+
+        protected override void OnMouseDown(MouseButtonEventArgs e)
+        {
+            MusicPlayer.OnMouseDown(e);
+        }
+
+        protected override void OnMouseMove(MouseMoveEventArgs e)
+        {
+            MusicPlayer.OnMouseMove(e);
         }
 
         private void OnRenderFrameEvent(object o, FrameEventArgs eventArgs)
@@ -113,19 +143,20 @@
             GL.ClearColor(Color4.DimGray);
             GL.Clear(ClearBufferMask.ColorBufferBit | ClearBufferMask.DepthBufferBit);
 
-            m_ShaderProgram.Use();
-            m_ProjectionMatrixUniform.Set(m_ShaderProgram);
+            //m_ShaderProgram.Use();
 
-            GL.ActiveTexture(TextureUnit.Texture0);
-            m_Texture.Bind();
-            {
-                m_Mesh.Bind();
-                {
-                    m_Mesh.Draw();
-                }
-                m_Mesh.UnBind();
-            }
-            m_Texture.UnBind();
+            //GL.ActiveTexture(TextureUnit.Texture0);
+            //m_Texture.Bind();
+            //{
+            //    m_Model.Bind();
+            //    {
+            //        m_Model.Draw();
+            //    }
+            //    m_Model.UnBind();
+            //}
+            //Texture.UnBind();
+
+            MusicPlayer.Draw();
 
             SwapBuffers();
         }

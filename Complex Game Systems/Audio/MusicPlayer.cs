@@ -6,10 +6,23 @@
 
     using FMOD;
 
+    using Geometry.Shapes;
+
+    using OpenTK;
+    using OpenTK.Graphics;
+    using OpenTK.Input;
+
+    using Debug = Utility.Debug;
+
     public static class MusicPlayer
     {
         private static Channel s_Channel;
+        private static Equalizer s_Equalizer;
         private static List<Sound> s_MusicList = new List<Sound>();
+
+        private static int s_CurrentIndex = -1;
+
+        private static bool s_IsSelected;
 
         public static void Init(string path = "Content\\Music\\")
         {
@@ -29,14 +42,13 @@
         public static RESULT Play()
         {
             if (s_Channel == null)
-                return Audio.PlaySound(ref s_Channel, s_MusicList[0], MODE.DEFAULT, 0);
+                return CreateChannel();
 
             bool isPlaying;
             var result = s_Channel.isPlaying(out isPlaying);
 
             return isPlaying ? result : Audio.Play(s_Channel);
         }
-
         public static RESULT Pause()
         {
             if (s_Channel == null)
@@ -44,13 +56,107 @@
 
             return s_Channel.setPaused(true);
         }
-
         public static RESULT TogglePause()
         {
             if (s_Channel == null)
                 Play();
 
             return Audio.TogglePause(s_Channel);
+        }
+
+        public static RESULT NextTrack()
+        {
+            if (s_CurrentIndex + 1 < s_MusicList.Count)
+                return PlaySound(s_MusicList[++s_CurrentIndex]);
+
+            return PlaySound(s_MusicList[s_CurrentIndex = 0]);
+        }
+        public static RESULT PreviousTrack()
+        {
+            if (s_CurrentIndex - 1 >= 0)
+                return PlaySound(s_MusicList[--s_CurrentIndex]);
+
+            return PlaySound(s_MusicList[s_CurrentIndex = s_MusicList.Count - 1]);
+        }
+
+        private static RESULT PlaySound(Sound sound)
+        {
+            return Audio.PlaySound(ref s_Channel, sound, MODE.DEFAULT, 0);
+        }
+
+        private static RESULT CreateChannel()
+        {
+            var result = PlaySound(s_MusicList[0]);
+            s_CurrentIndex = 0;
+            s_Equalizer = new Equalizer(s_Channel);
+
+            return result;
+        }
+
+        public static void Update()
+        {
+            uint position;
+            s_Channel.getPosition(out position, TIMEUNIT.MS);
+
+            Sound sound;
+            s_Channel.getCurrentSound(out sound);
+
+            uint length;
+            sound.getLength(out length, TIMEUNIT.MS);
+
+            if (position >= length)
+                PlaySound(s_MusicList[++s_CurrentIndex]);
+
+            s_Equalizer.Update();
+        }
+
+        public static void OnMouseDown(MouseButtonEventArgs e)
+        {
+            if (!s_IsSelected || e.Button != MouseButton.Left)
+                return;
+
+            Sound sound;
+            s_Channel.getCurrentSound(out sound);
+
+            uint length;
+            sound.getLength(out length, TIMEUNIT.MS);
+
+            uint f = (uint)((float)e.X / GameWindow.main.Width * length);
+            s_Channel.setPosition(f, TIMEUNIT.MS);
+        }
+        public static void OnMouseMove(MouseMoveEventArgs e)
+        {
+            s_IsSelected = e.Y <= GameWindow.main.Height - 195f && e.Y >= GameWindow.main.Height - 212f;
+        }
+
+        public static void Draw()
+        {
+            uint position;
+            s_Channel.getPosition(out position, TIMEUNIT.MS);
+
+            Sound sound;
+            s_Channel.getCurrentSound(out sound);
+
+            uint length;
+            sound.getLength(out length, TIMEUNIT.MS);
+
+            var proportion = (float)position / length;
+
+            var extraSpace = s_IsSelected ? 5 : 0;
+
+            Gizmos.DrawRectangle(
+                new Vector2(0f, GameWindow.main.Height - 200f),
+                new Vector2(GameWindow.main.Width, GameWindow.main.Height - 202f - extraSpace),
+                Color4.BlueViolet,
+                Color4.BlueViolet);
+
+            Gizmos.DrawRectangle(
+                new Vector2(0f, GameWindow.main.Height - 200f),
+                new Vector2(proportion * GameWindow.main.Width, GameWindow.main.Height - 202f - extraSpace),
+                Color4.White,
+                Color4.White);
+
+            s_Equalizer.Draw();
         }
     }
 }

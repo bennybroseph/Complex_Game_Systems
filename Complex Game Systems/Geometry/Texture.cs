@@ -26,9 +26,25 @@
             m_MinFilter = minFilter;
             m_MagFilter = magFilter;
 
-            Debug.Log("Loading image at " + path);
+            m_Path = path;
 
-            var bitmap = new Bitmap(path);
+            GL.GenTextures(1, out m_Handle);
+        }
+
+        public void Bind()
+        {
+            GL.BindTexture(TextureTarget.Texture2D, m_Handle);
+        }
+        public static void UnBind()
+        {
+            GL.BindTexture(TextureTarget.Texture2D, 0);
+        }
+
+        public void BufferData()
+        {
+            Debug.Log("Loading image at " + m_Path);
+
+            var bitmap = new Bitmap(m_Path);
             BitmapData data =
                 bitmap.LockBits(
                     new Rectangle(0, 0, bitmap.Width, bitmap.Height),
@@ -36,9 +52,6 @@
 
             m_ImageWidth = bitmap.Width;
             m_ImageHeight = bitmap.Height;
-
-            GL.GenTextures(1, out m_Handle);
-            Bind();
 
             GL.TexImage2D(
                 TextureTarget.Texture2D,
@@ -57,15 +70,6 @@
                 TextureTarget.Texture2D, TextureParameterName.TextureMinFilter, (int)m_MinFilter);
             GL.TexParameter(
                 TextureTarget.Texture2D, TextureParameterName.TextureMagFilter, (int)m_MagFilter);
-        }
-
-        public void Bind()
-        {
-            GL.BindTexture(TextureTarget.Texture2D, m_Handle);
-        }
-        public void UnBind()
-        {
-            GL.BindTexture(TextureTarget.Texture2D, 0);
         }
     }
 }

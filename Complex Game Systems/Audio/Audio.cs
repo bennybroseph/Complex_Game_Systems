@@ -96,6 +96,15 @@
             return channel.setPaused(!paused);
         }
 
+        public static RESULT CreateDSP(ref DSP_DESCRIPTION dspDescription, out DSP dsp)
+        {
+            return m_FMODSystem.createDSP(ref dspDescription, out dsp);
+        }
+        public static RESULT CreateDSP(DSP_TYPE dspType, out DSP dsp)
+        {
+            return m_FMODSystem.createDSPByType(dspType, out dsp);
+        }
+
         private static RESULT LogError(
             object obj, RESULT result,
             [CallerLineNumber] int lineNumber = 0,
