@@ -1,16 +1,12 @@
-﻿namespace ComplexGameSystems.Geometry
+﻿namespace Geometry
 {
-    using System;
-
     using OpenTK;
     using OpenTK.Graphics;
     using OpenTK.Graphics.OpenGL;
 
-    using Utility;
-
     public class Model<TVertex> where TVertex : struct
     {
-        public Matrix4 matrix { get; set; }
+        public Transform transform { get; set; } = new Transform();
 
         public Mesh<TVertex> mesh { get; set; }
 
@@ -55,26 +51,28 @@
 
         public void BufferData()
         {
+            shader.Use();
+
             if (normalTexture != null)
             {
                 normalTexture.BufferData();
 
                 var location = shader.GetUniformLocation("normalMap");
-                GL.ProgramUniform1(shader.handle, location, 0);
+                GL.Uniform1(location, 0);
             }
             if (diffuseTexture != null)
             {
                 diffuseTexture.BufferData();
 
                 var location = shader.GetUniformLocation("diffuseMap");
-                GL.ProgramUniform1(shader.handle, location, 0);
+                GL.Uniform1(location, 1);
             }
             if (specularTexture != null)
             {
                 specularTexture.BufferData();
 
                 var location = shader.GetUniformLocation("specularMap");
-                GL.ProgramUniform1(shader.handle, location, 0);
+                GL.Uniform1(location, 2);
             }
 
             mesh.BufferData(shader);
@@ -82,10 +80,11 @@
 
         public void Draw()
         {
-            // get uniform location
-            var location = shader.GetUniformLocation("ProjectionMatrix");
+            shader.Use();
 
-            var tempMatrix = Camera.main.viewProjection * matrix;
+            // get uniform location
+            var location = shader.GetUniformLocation("projectionMatrix");
+            var tempMatrix = transform.worldSpaceMatrix * Camera.main.viewProjection; // why though
 
             // set uniform value
             GL.UniformMatrix4(location, false, ref tempMatrix);

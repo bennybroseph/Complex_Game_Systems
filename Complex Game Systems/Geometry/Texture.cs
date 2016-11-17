@@ -1,11 +1,11 @@
-﻿namespace ComplexGameSystems.Geometry
+﻿namespace Geometry
 {
     using System.Drawing;
     using System.Drawing.Imaging;
 
-    using ComplexGameSystems.Utility;
-
     using OpenTK.Graphics.OpenGL;
+
+    using Utility;
 
     using PixelFormat = OpenTK.Graphics.OpenGL.PixelFormat;
 

@@ -16,7 +16,7 @@ out vec3 vTangent;
 out vec3 vBiTangent;
 
 // a projection transformation to apply to the vertex' position
-uniform mat4 ProjectionMatrix;
+uniform mat4 projectionMatrix;
 
 void main()
 {
@@ -28,5 +28,5 @@ void main()
 	vBiTangent = cross(vNormal, vTangent);
 
 	// gl_Position is a special variable of OpenGL that must be set
-	gl_Position = ProjectionMatrix * vec4(inPosition, 1.0f);
+	gl_Position = projectionMatrix * vec4(inPosition, 1.0f);
 }

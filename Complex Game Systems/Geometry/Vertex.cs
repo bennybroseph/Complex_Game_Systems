@@ -1,8 +1,8 @@
-﻿using OpenTK;
-using OpenTK.Graphics;
-
-namespace ComplexGameSystems.Geometry
+﻿namespace Geometry
 {
+    using OpenTK;
+    using OpenTK.Graphics;
+
     public struct Vertex
     {
         public const int size = (3 + 4 + 3 + 3 + 2) * 4;

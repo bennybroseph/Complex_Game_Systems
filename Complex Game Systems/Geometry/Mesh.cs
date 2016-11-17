@@ -1,13 +1,9 @@
-﻿namespace ComplexGameSystems
+﻿namespace Geometry
 {
     using System;
     using System.Collections.Generic;
 
-    using Geometry;
-
     using OpenTK.Graphics.OpenGL;
-
-    using Utility;
 
     public class Mesh<TVertex> where TVertex : struct
     {
@@ -32,7 +28,7 @@
 
         public void Bind()
         {
-            vao.Bind(); 
+            vao.Bind();
             vbo.Bind();
             ibo.Bind();
         }

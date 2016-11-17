@@ -1,32 +1,20 @@
-﻿namespace ComplexGameSystems
+﻿using System;
+
+using OpenTK;
+
+public class StaticCamera : Camera
 {
-    using OpenTK;
-    using OpenTK.Input;
-
-    public class StaticCamera : Camera
+    protected override void OnResize(object sender, EventArgs eventArgs)
     {
-        public override void Update()
-        {
-            m_PositionMatrix *= Matrix4.CreateRotationY(0.0005f);
-            //m_PositionMatrix *= Matrix4.CreateRotationZ(0.0005f);
-        }
+        var window = sender as OpenTK.GameWindow;
+        if (window == null)
+            return;
 
-        public void OnKeyDown(KeyboardKeyEventArgs e)
-        {
-            if (e.Key == Key.Q)
-                m_PositionMatrix *= Matrix4.CreateTranslation(1f, 0f, 0f);
-            if (e.Key == Key.E)
-                m_PositionMatrix *= Matrix4.CreateTranslation(-1f, 0f, 0f);
+        aspectRatio = window.Width / (float)window.Height;
 
-            if (e.Key == Key.A)
-                m_PositionMatrix *= Matrix4.CreateTranslation(0f, 0f, 1f);
-            if (e.Key == Key.D)
-                m_PositionMatrix *= Matrix4.CreateTranslation(0f, 0f, -1f);
-
-            if (e.Key == Key.W)
-                m_PositionMatrix *= Matrix4.CreateTranslation(0f, 1f, 0f);
-            if (e.Key == Key.S)
-                m_PositionMatrix *= Matrix4.CreateTranslation(0f, -1f, 0f);
-        }
+        m_ProjectionMatrix =
+            Matrix4.CreatePerspectiveFieldOfView(
+                fieldOfView, aspectRatio, near, far);
     }
+    public override void Update() { }
 }

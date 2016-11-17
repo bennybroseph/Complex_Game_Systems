@@ -1,4 +1,4 @@
-﻿namespace ComplexGameSystems.UI
+﻿namespace UI
 {
     public class Button
     {

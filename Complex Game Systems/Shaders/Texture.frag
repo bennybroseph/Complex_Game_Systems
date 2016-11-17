@@ -27,7 +27,6 @@ void main()
 	vec3 N = texture(normalMap, vTextureUV).xyz * 2 - 1;
 	float d = max(0, dot(normalize(TBN * N), normalize(lightDirection)));
 
-	//fragColour = vec4(vNormal, 1);
 	fragColour = texture(diffuseMap, vTextureUV);
 	//fragColour.rgb = fragColour.rgb * d;
 }

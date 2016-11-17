@@ -1,10 +1,10 @@
-﻿using System;
-using System.Diagnostics;
-using System.IO;
-using System.Runtime.CompilerServices;
-
-namespace ComplexGameSystems.Utility
+﻿namespace Utility
 {
+    using System;
+    using System.Diagnostics;
+    using System.IO;
+    using System.Runtime.CompilerServices;
+
     public static class Debug
     {
         private static Stopwatch s_Stopwatch;

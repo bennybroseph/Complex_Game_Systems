@@ -1,8 +1,8 @@
-﻿using OpenTK;
-using OpenTK.Graphics.OpenGL;
-
-namespace ComplexGameSystems.Geometry
+﻿namespace Geometry
 {
+    using OpenTK;
+    using OpenTK.Graphics.OpenGL;
+
     public sealed class Matrix4Uniform
     {
         private readonly string m_Name;

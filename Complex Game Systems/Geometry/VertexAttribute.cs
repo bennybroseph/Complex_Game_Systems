@@ -1,7 +1,7 @@
-﻿using OpenTK.Graphics.OpenGL;
-
-namespace ComplexGameSystems.Geometry
+﻿namespace Geometry
 {
+    using OpenTK.Graphics.OpenGL;
+
     public sealed class VertexAttribute
     {
         private readonly string m_Name;

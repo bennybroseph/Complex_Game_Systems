@@ -1,4 +1,4 @@
-﻿namespace ComplexGameSystems.Geometry
+﻿namespace Geometry
 {
     using System;
     using System.Collections.Generic;

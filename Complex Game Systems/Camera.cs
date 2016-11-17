@@ -1,35 +1,45 @@
-﻿namespace ComplexGameSystems
+﻿using System;
+
+using OpenTK;
+
+public abstract class Camera
 {
-    using Geometry;
+    public static Camera main { get; protected set; }
 
-    using OpenTK;
+    public float fieldOfView { get; protected set; }
+    public float aspectRatio { get; protected set; }
+    public float near { get; protected set; }
+    public float far { get; protected set; }
 
-    public abstract class Camera
+    protected Matrix4 m_ProjectionMatrix;
+    protected Matrix4 m_PositionMatrix;
+
+    public Matrix4 view => m_PositionMatrix; // Thought I needed an inverse, but I'm not even sure anymore
+    public Matrix4 projection => m_ProjectionMatrix;
+    public Matrix4 viewProjection => m_PositionMatrix * m_ProjectionMatrix;
+
+    protected Camera()
     {
-        public static Camera main { get; protected set; }
+        if (main == null)
+            main = this;
 
-        protected Matrix4 m_ProjectionMatrix;
-        protected Matrix4 m_PositionMatrix;
+        GameWindow.main.Resize += OnResize;
+    }
 
-        public Matrix4 view => Matrix4.Invert(m_PositionMatrix);
-        public Matrix4 projection => m_ProjectionMatrix;
-        public Matrix4 viewProjection => m_ProjectionMatrix * view;
+    protected abstract void OnResize(object sender, EventArgs eventArgs);
+    public abstract void Update();
 
-        protected Camera()
-        {
-            if (main == null)
-                main = this;
-        }
+    public void SetPerspective(float fieldOfView, float aspectRatio, float near, float far)
+    {
+        this.fieldOfView = fieldOfView;
+        this.aspectRatio = aspectRatio;
+        this.near = near;
+        this.far = far;
 
-        public abstract void Update();
-
-        public void SetPerspective(float fieldOfView, float aspectRatio, float near, float far)
-        {
-            m_ProjectionMatrix = Matrix4.CreatePerspectiveFieldOfView(fieldOfView, aspectRatio, near, far);
-        }
-        public void SetLookAt(Vector3 from, Vector3 to, Vector3 up)
-        {
-            m_PositionMatrix = Matrix4.LookAt(from, to, up);
-        }
+        m_ProjectionMatrix = Matrix4.CreatePerspectiveFieldOfView(fieldOfView, aspectRatio, near, far);
+    }
+    public void SetLookAt(Vector3 from, Vector3 to, Vector3 up)
+    {
+        m_PositionMatrix = Matrix4.LookAt(from, to, up);
     }
 }

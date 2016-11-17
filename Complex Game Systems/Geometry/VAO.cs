@@ -1,11 +1,8 @@
-﻿namespace ComplexGameSystems.Geometry
+﻿namespace Geometry
 {
     using System.Collections.Generic;
-    using System.Linq;
 
     using OpenTK.Graphics.OpenGL;
-
-    using Utility;
 
     public sealed class VAO<TVertex> where TVertex : struct
     {
