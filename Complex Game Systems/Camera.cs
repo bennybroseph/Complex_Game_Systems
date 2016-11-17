@@ -13,7 +13,7 @@
 
         public Matrix4 view => Matrix4.Invert(m_PositionMatrix);
         public Matrix4 projection => m_ProjectionMatrix;
-        public Matrix4 modelViewProjection => m_ProjectionMatrix * view;
+        public Matrix4 viewProjection => m_ProjectionMatrix * view;
 
         protected Camera()
         {

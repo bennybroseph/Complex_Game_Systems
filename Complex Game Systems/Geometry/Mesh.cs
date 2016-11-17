@@ -1,10 +1,13 @@
 ﻿namespace ComplexGameSystems
 {
+    using System;
     using System.Collections.Generic;
 
     using Geometry;
 
     using OpenTK.Graphics.OpenGL;
+
+    using Utility;
 
     public class Mesh<TVertex> where TVertex : struct
     {
@@ -12,15 +15,15 @@
         public VAO<TVertex> vao { get; }
         public IBO ibo { get; }
 
-        public BeginMode mode { get; }
+        public PrimitiveType drawType { get; }
 
         public Mesh(
-            BeginMode mode,
+            PrimitiveType drawType,
             IEnumerable<TVertex> vertexes, int vertexSize,
             IEnumerable<uint> indexes,
             params VertexAttribute[] attributes)
         {
-            this.mode = mode;
+            this.drawType = drawType;
 
             vbo = new VBO<TVertex>(vertexes, vertexSize);
             vao = new VAO<TVertex>(vbo, attributes);
@@ -29,14 +32,14 @@
 
         public void Bind()
         {
+            vao.Bind(); 
             vbo.Bind();
-            vao.Bind();
             ibo.Bind();
         }
         public void UnBind()
         {
-            vbo.UnBind();
             vao.UnBind();
+            vbo.UnBind();
             IBO.UnBind();
         }
 
@@ -49,7 +52,7 @@
 
         public void Draw()
         {
-            GL.DrawElements(mode, ibo.size, DrawElementsType.UnsignedInt, 0);
+            GL.DrawElements(drawType, ibo.size, DrawElementsType.UnsignedInt, IntPtr.Zero);
         }
     }
 }

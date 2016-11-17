@@ -10,9 +10,9 @@
     {
         private readonly int m_Handle;
 
-        private readonly List<uint> m_Indexes;
+        private readonly IEnumerable<uint> m_Indexes;
 
-        public int size => m_Indexes.Count;
+        public int size => m_Indexes.Count();
 
         public IBO(IEnumerable<uint> indexes)
         {
@@ -34,7 +34,7 @@
         {
             GL.BufferData(
                 BufferTarget.ElementArrayBuffer,
-                (IntPtr)(m_Indexes.Count * sizeof(uint)),
+                (IntPtr)(m_Indexes.Count() * sizeof(uint)),
                 m_Indexes.ToArray(),
                 BufferUsageHint.StaticDraw);
         }

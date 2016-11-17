@@ -1,6 +1,5 @@
 ﻿#version 410
 
-in vec4 vPosition;
 in vec4 vColor;
 in vec2 vTextureUV;
 in vec3 vNormal;
@@ -29,6 +28,6 @@ void main()
 	float d = max(0, dot(normalize(TBN * N), normalize(lightDirection)));
 
 	//fragColour = vec4(vNormal, 1);
-	fragColour = vPosition;
+	fragColour = texture(diffuseMap, vTextureUV);
 	//fragColour.rgb = fragColour.rgb * d;
 }

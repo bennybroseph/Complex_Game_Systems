@@ -1,6 +1,7 @@
 ﻿namespace ComplexGameSystems
 {
     using System;
+    using System.Drawing;
     using System.IO;
 
     using Geometry;
@@ -74,10 +75,11 @@
 
         protected override void OnLoad(EventArgs eventArgs)
         {
+            GL.ClearColor(Color4.DimGray);
+            GL.DebugMessageCallback(OnDebugMessage, IntPtr.Zero);
+
             Audio.Init();
             MusicPlayer.Init("Content\\Music\\Bomberman 64");
-
-            RenderFrame += OnRenderFrameEvent;
 
             var vertShaderCode = File.ReadAllText("Shaders/Texture.vert");
             var vertShader = new Shader(ShaderType.VertexShader, vertShaderCode);
@@ -89,12 +91,8 @@
 
             m_Texture = new Texture(
                 "Content\\Pictures\\Brock.jpg", TextureMinFilter.Nearest, TextureMagFilter.Nearest);
-            m_Texture.Bind();
 
-            var location = m_ShaderProgram.GetUniformLocation("diffuseMap");
-            GL.ProgramUniform1(m_ShaderProgram.handle, location, 0);
-
-            location = m_ShaderProgram.GetUniformLocation("lightDirection");
+            var location = m_ShaderProgram.GetUniformLocation("lightDirection");
             GL.ProgramUniform3(m_ShaderProgram.handle, location, 0, -1, 0);
 
             var mesh = Plane.GetMesh();
@@ -111,10 +109,12 @@
             m_Model.UnBind();
 
             m_Camera = new StaticCamera();
-            m_Camera.SetPerspective(MathHelper.Pi * 0.25f, 16f / 9f, 0.1f, 75f);
-            m_Camera.SetLookAt(new Vector3(0f, 5f, -10f), Vector3.Zero, new Vector3(0f, 1f, 0f));
+            m_Camera.SetPerspective(MathHelper.PiOver4, Width / (float)Height, 0.01f, 75f);
+            m_Camera.SetLookAt(new Vector3(0f, -1f, -5f), Vector3.Zero, new Vector3(0f, 1f, 0f));
 
             MusicPlayer.Play();
+
+            RenderFrame += OnRenderFrameEvent;
         }
 
         protected override void OnUpdateFrame(FrameEventArgs eventArgs)
@@ -138,23 +138,61 @@
             MusicPlayer.OnMouseMove(e);
         }
 
+        protected void OnDebugMessage(
+            DebugSource source, DebugType type, int num1, DebugSeverity severity, int num2, IntPtr ptr1, IntPtr ptr2)
+        {
+            Debug.Log(source + " " + type);
+        }
+
         private void OnRenderFrameEvent(object o, FrameEventArgs eventArgs)
         {
-            GL.ClearColor(Color4.DimGray);
             GL.Clear(ClearBufferMask.ColorBufferBit | ClearBufferMask.DepthBufferBit);
 
-            //m_ShaderProgram.Use();
+            //GL.UseProgram(0);
 
-            //GL.ActiveTexture(TextureUnit.Texture0);
-            //m_Texture.Bind();
+            //var tempMatrix = Camera.main.projection;
+            //GL.MatrixMode(MatrixMode.Projection);
+            //GL.LoadIdentity();
+            //GL.LoadMatrix(ref tempMatrix);
+
+            //tempMatrix = Camera.main.view;
+            //GL.MatrixMode(MatrixMode.Modelview);
+            //GL.LoadIdentity();
+            //GL.LoadMatrix(ref tempMatrix);
+
+            //GL.LineWidth(5f);
+            //GL.Begin(PrimitiveType.Lines);
             //{
-            //    m_Model.Bind();
-            //    {
-            //        m_Model.Draw();
-            //    }
-            //    m_Model.UnBind();
+            //    GL.Color4(Color.Red);
+            //    GL.Vertex3(1, 0, 0);
+            //    GL.Color4(Color.Black);
+            //    GL.Vertex3(-1, 0, 0);
             //}
-            //Texture.UnBind();
+            //GL.End();
+
+            //GL.Begin(PrimitiveType.Lines);
+            //{
+            //    GL.Color4(Color.Green);
+            //    GL.Vertex3(0, 1, 0);
+            //    GL.Color4(Color.Black);
+            //    GL.Vertex3(0, -1, 0);
+            //}
+            //GL.End();
+
+            //GL.Begin(PrimitiveType.Lines);
+            //{
+            //    GL.Color4(Color.Blue);
+            //    GL.Vertex3(0, 0, 1);
+            //    GL.Color4(Color.Black);
+            //    GL.Vertex3(0, 0, -1);
+            //}
+            //GL.End();
+
+            m_Model.Bind();
+            {
+                m_Model.Draw();
+            }
+            m_Model.UnBind();
 
             MusicPlayer.Draw();
 

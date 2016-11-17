@@ -6,6 +6,8 @@
     using OpenTK.Graphics;
     using OpenTK.Graphics.OpenGL;
 
+    using Utility;
+
     public class Model<TVertex> where TVertex : struct
     {
         public Matrix4 matrix { get; set; }
@@ -54,11 +56,26 @@
         public void BufferData()
         {
             if (normalTexture != null)
+            {
                 normalTexture.BufferData();
+
+                var location = shader.GetUniformLocation("normalMap");
+                GL.ProgramUniform1(shader.handle, location, 0);
+            }
             if (diffuseTexture != null)
+            {
                 diffuseTexture.BufferData();
+
+                var location = shader.GetUniformLocation("diffuseMap");
+                GL.ProgramUniform1(shader.handle, location, 0);
+            }
             if (specularTexture != null)
+            {
                 specularTexture.BufferData();
+
+                var location = shader.GetUniformLocation("specularMap");
+                GL.ProgramUniform1(shader.handle, location, 0);
+            }
 
             mesh.BufferData(shader);
         }
@@ -68,9 +85,7 @@
             // get uniform location
             var location = shader.GetUniformLocation("ProjectionMatrix");
 
-            var tempMatrix = Camera.main.modelViewProjection * matrix;
-            //matrix = matrix.ClearRotation();
-            matrix *= Matrix4.CreateRotationX(0.01f);
+            var tempMatrix = Camera.main.viewProjection * matrix;
 
             // set uniform value
             GL.UniformMatrix4(location, false, ref tempMatrix);

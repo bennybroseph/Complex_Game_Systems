@@ -36,7 +36,7 @@ namespace ComplexGameSystems
             GL.LinkProgram(handle);
 
             int status;
-            GL.GetProgram(handle, ProgramParameter.LinkStatus, out status);
+            GL.GetProgram(handle, GetProgramParameterName.LinkStatus, out status);
             if (status == 0)
                 Debug.Log(
                     string.Format("Error linking program: {0}", GL.GetProgramInfoLog(handle)));

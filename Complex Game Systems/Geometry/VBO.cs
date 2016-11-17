@@ -1,24 +1,24 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-
-using OpenTK.Graphics.OpenGL;
-
-namespace ComplexGameSystems.Geometry
+﻿namespace ComplexGameSystems.Geometry
 {
+    using System;
+    using System.Collections.Generic;
+    using System.Linq;
+
+    using OpenTK.Graphics.OpenGL;
+
     public sealed class VBO<TVertex> where TVertex : struct
     {
         private readonly int m_VertexSize;
-        private readonly List<TVertex> m_Vertexes;
+        private readonly IEnumerable<TVertex> m_Vertexes;
 
         private readonly int m_Handle;
 
         public VBO(IEnumerable<TVertex> vertexes, int vertexSize)
         {
             m_VertexSize = vertexSize;
-            m_Vertexes = vertexes.ToList();
+            m_Vertexes = vertexes;
 
-            m_Handle = GL.GenBuffer();
+            GL.GenBuffers(1, out m_Handle);
         }
 
         public void Bind()
@@ -34,14 +34,14 @@ namespace ComplexGameSystems.Geometry
         {
             GL.BufferData(
                 BufferTarget.ArrayBuffer,
-                (IntPtr)(m_Vertexes.Count * m_VertexSize),
+                (IntPtr)(m_Vertexes.Count() * m_VertexSize),
                 m_Vertexes.ToArray(),
-                BufferUsageHint.StreamDraw);
+                BufferUsageHint.StaticDraw);
         }
 
         public void Draw()
         {
-            GL.DrawArrays(PrimitiveType.Triangles, 0, m_Vertexes.Count);
+            GL.DrawArrays(PrimitiveType.Triangles, 0, m_Vertexes.Count());
         }
     }
 }

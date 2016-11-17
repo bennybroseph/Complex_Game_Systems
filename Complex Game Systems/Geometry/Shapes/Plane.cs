@@ -43,7 +43,7 @@
                     yield return
                         new Vertex(
                             new Vector3(
-                                (x + 1 - segments / 2f) / segments, 0f, (y - segments / 2f) / segments),
+                                (x + 1f - segments / 2f) / segments, 0f, (y - segments / 2f) / segments),
                             new Color4(1f, 1f, 1f, 1f),
                             new Vector2((x + 1f) / segments, y / segments),
                             new Vector3(0f, 1f, 0f),
@@ -71,7 +71,7 @@
         }
         private static IEnumerable<uint> GenIndexes(float segments)
         {
-            for (uint i = 0; i < segments; ++i)
+            for (uint i = 0; i < segments * segments * 4f; i += 4)
             {
                 yield return i;
                 yield return i + 1;
@@ -96,7 +96,7 @@
 
             var mesh =
                 new Mesh<Vertex>(
-                    BeginMode.Triangles,
+                    PrimitiveType.Triangles,
                     GenVertexes(segments), Vertex.size,
                     GenIndexes(segments),
                     new VertexAttribute("inPosition", 3, Vertex.size, 0),
