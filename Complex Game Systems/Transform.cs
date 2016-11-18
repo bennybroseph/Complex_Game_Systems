@@ -35,7 +35,7 @@ public class Transform : IEnumerable<Transform>
             }
 
             var newTranslationMatrix = Matrix4.CreateTranslation(value);
-            newTranslationMatrix = newTranslationMatrix * Matrix4.Invert(parent.worldSpaceMatrix);
+            newTranslationMatrix *= Matrix4.Invert(parent.worldSpaceMatrix);
 
             localPosition = newTranslationMatrix.ExtractTranslation();
         }
@@ -62,9 +62,9 @@ public class Transform : IEnumerable<Transform>
             }
 
             value = value.ToRadians();
-            var newRotationMatrix = Matrix4.CreateFromQuaternion(Quaternion.FromEulerAngles(value));
+            var newRotationMatrix = MathExtensions.CreateEulerRotation(value);
 
-            newRotationMatrix = Matrix4.Invert(parent.worldSpaceMatrix) * newRotationMatrix;
+            newRotationMatrix *= Matrix4.Invert(parent.worldSpaceMatrix);
             localEulerAngles = newRotationMatrix.ExtractEulerAngle();
         }
     }
@@ -114,31 +114,54 @@ public class Transform : IEnumerable<Transform>
 
     public void Translate(Vector3 translation)
     {
-        m_Matrix *= Matrix4.CreateTranslation(translation);
+        m_Matrix = Matrix4.CreateTranslation(translation) * m_Matrix;
     }
 
     public void Rotate(Vector3 rotation)
     {
         rotation = rotation.ToRadians();
-        m_Matrix *= MathExtensions.CreateEulerRotation(rotation);
+        m_Matrix = MathExtensions.CreateEulerRotation(rotation) * m_Matrix;
     }
 
     public void RotateX(float angle)
     {
-        m_Matrix *= Matrix4.CreateRotationX(MathHelper.DegreesToRadians(angle));
+        m_Matrix = Matrix4.CreateRotationX(MathHelper.DegreesToRadians(angle)) * m_Matrix;
     }
     public void RotateY(float angle)
     {
-        m_Matrix *= Matrix4.CreateRotationY(MathHelper.DegreesToRadians(angle));
+        m_Matrix = Matrix4.CreateRotationY(MathHelper.DegreesToRadians(angle)) * m_Matrix;
     }
     public void RotateZ(float angle)
     {
-        m_Matrix *= Matrix4.CreateRotationZ(MathHelper.DegreesToRadians(angle));
+        m_Matrix = Matrix4.CreateRotationZ(MathHelper.DegreesToRadians(angle)) * m_Matrix;
     }
 
     public void Scale(Vector3 scale)
     {
-        m_Matrix *= Matrix4.CreateScale(scale);
+        m_Matrix = Matrix4.CreateScale(scale) * m_Matrix;
+    }
+
+    public void SetLookAt(Vector3 from, Vector3 to, Vector3 up)
+    {
+        var zAxis = (from - to).Normalized();
+        var xAxis = Vector3.Cross(up, zAxis).Normalized();
+        var yAxis = Vector3.Cross(zAxis, xAxis);
+
+        var orientation =
+            new Matrix4(
+                xAxis.X, yAxis.X, zAxis.X, 0,
+                xAxis.Y, yAxis.Y, zAxis.Y, 0,
+                xAxis.Z, yAxis.Z, zAxis.Z, 0,
+                0, 0, 0, 1);
+
+        var translation =
+            new Matrix4(
+                1, 0, 0, 0,
+                0, 1, 0, 0,
+                0, 0, 1, 0,
+                -from.X, -from.Y, -from.Z, 1);
+
+        m_Matrix = (translation * orientation).Inverted();
     }
 
     public void SetParent(Transform newParent, bool keepWorldTransformation = true)
@@ -184,14 +207,14 @@ public class Transform : IEnumerable<Transform>
             m_Children.Clear();
         }
 
-        Vector3 oldPosition;
-        Quaternion oldEulerAngle;
-        Vector3 oldScale;
+        Vector3 oldPosition = Vector3.Zero;
+        Vector3 oldEulerAngle = Vector3.Zero;
+        Vector3 oldScale = Vector3.One;
         if (keepWorldTransformation)
         {
-            oldPosition = m_Matrix.ExtractTranslation();
-            oldEulerAngle = m_Matrix.ExtractRotation();
-            oldScale = m_Matrix.ExtractScale();
+            oldPosition = position;
+            oldEulerAngle = eulerAngles;
+            oldScale = localScale;
         }
 
         parent = newParent;
@@ -201,9 +224,9 @@ public class Transform : IEnumerable<Transform>
 
         if (keepWorldTransformation)
         {
-            //SetPosition(oldPosition);
-            //SetEulerAngle(oldEulerAngle);
-            //SetScale(oldScale);
+            position = oldPosition;
+            eulerAngles = oldEulerAngle;
+            localScale = oldScale;
         }
     }
 }
@@ -229,7 +252,7 @@ public static class MathExtensions
 
     public static Vector3 ExtractEulerAngle(this Matrix4 matrix)
     {
-        var sy = Math.Sqrt(matrix[0, 0] * matrix[0, 0] * matrix[0, 0]);
+        var sy = (float)Math.Sqrt(matrix[0, 0] * matrix[0, 0] + matrix[0, 1] * matrix[0, 1]);
 
         var singular = sy < 1e-6;
 
@@ -247,11 +270,8 @@ public static class MathExtensions
             z = 0;
         }
 
-        var eulerAngle =
-            new Vector3(
-                MathHelper.RadiansToDegrees(x),
-                MathHelper.RadiansToDegrees(y),
-                MathHelper.RadiansToDegrees(z));
+        var eulerAngle = new Vector3(x, y, z).ToDegrees();
+        eulerAngle = ClampAngle(eulerAngle);
 
         return eulerAngle;
     }
@@ -285,6 +305,36 @@ public static class MathExtensions
         rotationZ[1, 1] = (float)Math.Cos(newEulerAngle.Z);
 
         // Apply
-        return rotationZ * rotationY * rotationX;
+        return rotationX * rotationY * rotationZ;
+    }
+
+    public static int Modulus(int a, int b)
+    {
+        b = Math.Abs(b);
+
+        var returnValue = a % b;
+        if (returnValue < 0)
+            returnValue += b;
+
+        return returnValue;
+    }
+    public static float Modulus(float a, float b)
+    {
+        var decimalValue = a - (int)a;
+
+        return Modulus((int)a, (int)b) + decimalValue;
+    }
+
+    public static float ClampAngle(float angle)
+    {
+        return Modulus(angle, 360f);
+    }
+    public static Vector3 ClampAngle(Vector3 eulerAngle)
+    {
+        eulerAngle.X = ClampAngle(eulerAngle.X);
+        eulerAngle.Y = ClampAngle(eulerAngle.Y);
+        eulerAngle.Z = ClampAngle(eulerAngle.Z);
+
+        return eulerAngle;
     }
 }

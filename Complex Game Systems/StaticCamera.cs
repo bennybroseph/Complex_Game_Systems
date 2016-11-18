@@ -12,9 +12,9 @@ public class StaticCamera : Camera
 
         aspectRatio = window.Width / (float)window.Height;
 
-        m_ProjectionMatrix =
-            Matrix4.CreatePerspectiveFieldOfView(
-                fieldOfView, aspectRatio, near, far);
+        //m_ProjectionMatrix =
+        //    Matrix4.CreatePerspectiveFieldOfView(
+        //        fieldOfView, aspectRatio, near, far);
     }
     public override void Update() { }
 }

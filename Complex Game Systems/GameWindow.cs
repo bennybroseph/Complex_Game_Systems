@@ -129,15 +129,14 @@ public class GameWindow : OpenTK.GameWindow
         m_Moon.BufferData();
         m_Moon.UnBind();
 
+        m_Moon.transform.Translate(new Vector3(1.5f, 0f, 0f));
         m_Moon.transform.Scale(new Vector3(0.5f, 0.5f, 0.5f));
         m_Moon.transform.SetParent(m_Earth.transform);
-
-        m_Moon.transform.Translate(new Vector3(1.5f, 0f, 0f));
 
         m_Models.Add(m_Moon);
 
         m_Camera = new StaticCamera();
-        m_Camera.SetLookAt(new Vector3(10f, 10f, 10f), Vector3.Zero, new Vector3(0f, 1f, 0f));
+        m_Camera.SetLookAt(new Vector3(0f, 5f, 10f), Vector3.Zero, new Vector3(0f, 1f, 0f));
         m_Camera.SetPerspective(MathHelper.PiOver4, Width / (float)Height, 0.1f, 75f);
 
         MusicPlayer.Play();
@@ -154,14 +153,14 @@ public class GameWindow : OpenTK.GameWindow
 
         m_Sun.transform.position =
             new Vector3(
-                m_Sun.transform.position.X + 0.01f, m_Sun.transform.position.Y, m_Sun.transform.position.Z);
+                m_Sun.transform.position.X - 0.01f, m_Sun.transform.position.Y, m_Sun.transform.position.Z);
         m_Sun.transform.eulerAngles =
             new Vector3(
                 m_Sun.transform.eulerAngles.X + 1f, m_Sun.transform.eulerAngles.Y, m_Sun.transform.eulerAngles.Z);
 
-        //m_Moon.transform.localScale = new Vector3(1.1f, 1.1f, 1.1f);
-        //m_Moon.transform.eulerAngles = Vector3.Zero;
-        //m_Moon.transform.position = new Vector3(5f, 5f, 0f);
+        m_Moon.transform.localScale = new Vector3(2.0f, 1.1f, 1.1f);
+        m_Moon.transform.eulerAngles = new Vector3(90f, 0f, 0f);
+        m_Moon.transform.position = new Vector3(2f, 2f, 0f);
     }
 
     protected override void OnKeyDown(KeyboardKeyEventArgs e)

@@ -84,7 +84,7 @@
 
             // get uniform location
             var location = shader.GetUniformLocation("projectionMatrix");
-            var tempMatrix = transform.worldSpaceMatrix * Camera.main.viewProjection; // why though
+            var tempMatrix = transform.worldSpaceMatrix * Camera.main.viewProjection;
 
             // set uniform value
             GL.UniformMatrix4(location, false, ref tempMatrix);
