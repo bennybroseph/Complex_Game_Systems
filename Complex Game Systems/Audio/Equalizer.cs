@@ -96,8 +96,8 @@ public class Equalizer
 
             var start =
                 new Vector2(
-                    GameWindow.main.Width / 2f + (float)Math.Cos(theta) * (100f + radiusValue),
-                    GameWindow.main.Height / 2f + (float)Math.Sin(theta) * (100f + radiusValue));
+                    MyGameWindow.main.Width / 2f + (float)Math.Cos(theta) * (100f + radiusValue),
+                    MyGameWindow.main.Height / 2f + (float)Math.Sin(theta) * (100f + radiusValue));
 
             var barValue = 100f * (spectrumTotal[i] / maxValue);
 
@@ -161,8 +161,8 @@ public class Equalizer
 
             var start =
                 new Vector2(
-                    GameWindow.main.Width / 2f + (float)Math.Cos(theta) * (100f + radiusValue),
-                    GameWindow.main.Height / 2f + (float)Math.Sin(theta) * (100f + radiusValue));
+                    MyGameWindow.main.Width / 2f + (float)Math.Cos(theta) * (100f + radiusValue),
+                    MyGameWindow.main.Height / 2f + (float)Math.Sin(theta) * (100f + radiusValue));
 
             var barValue = 100f * (spectrumTotal[i] / maxValue);
 

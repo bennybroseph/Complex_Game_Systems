@@ -1,4 +1,6 @@
-﻿using OpenTK.Graphics.OpenGL;
+﻿using System.IO;
+
+using OpenTK.Graphics.OpenGL;
 
 using Utility;
 
@@ -19,7 +21,29 @@ public sealed class Shader
 
 public sealed class ShaderProgram
 {
+    public static ShaderProgram basic { get; private set; }
+    public static ShaderProgram texture { get; private set; }
+
     public int handle { get; }
+
+    public static void Init()
+    {
+        var vertShaderCode = File.ReadAllText("Shaders/Default.vert");
+        var vertShader = new Shader(ShaderType.VertexShader, vertShaderCode);
+
+        var fragShaderCode = File.ReadAllText("Shaders/Default.frag");
+        var fragShader = new Shader(ShaderType.FragmentShader, fragShaderCode);
+
+        basic = new ShaderProgram(vertShader, fragShader);
+
+        vertShaderCode = File.ReadAllText("Shaders/Texture.vert");
+        vertShader = new Shader(ShaderType.VertexShader, vertShaderCode);
+
+        fragShaderCode = File.ReadAllText("Shaders/Texture.frag");
+        fragShader = new Shader(ShaderType.FragmentShader, fragShaderCode);
+
+        texture = new ShaderProgram(vertShader, fragShader);
+    }
 
     public ShaderProgram(params Shader[] shaders)
     {

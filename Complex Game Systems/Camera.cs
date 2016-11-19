@@ -23,7 +23,7 @@ public abstract class Camera
         if (main == null)
             main = this;
 
-        GameWindow.main.Resize += OnResize;
+        MyGameWindow.main.Resize += OnResize;
     }
 
     protected abstract void OnResize(object sender, EventArgs eventArgs);

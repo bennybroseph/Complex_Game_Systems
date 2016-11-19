@@ -10,24 +10,27 @@ using OpenTK.Graphics;
 using OpenTK.Graphics.OpenGL;
 using OpenTK.Input;
 
+using UI;
+
 using Utility;
 
-public class GameWindow : OpenTK.GameWindow
+public class MyGameWindow : GameWindow
 {
     private readonly List<Model<Vertex>> m_Models = new List<Model<Vertex>>();
+
     private Model<Vertex> m_Sun;
     private Model<Vertex> m_Earth;
     private Model<Vertex> m_Moon;
 
-    private Texture m_Texture;
+    private Canvas m_Canvas;
 
-    private ShaderProgram m_ShaderProgram;
+    private Texture m_Texture;
 
     private Camera m_Camera;
 
-    public static GameWindow main { get; protected set; }
+    public static MyGameWindow main { get; protected set; }
 
-    public GameWindow() :
+    public MyGameWindow() :
         this(
         1600,
         900,
@@ -42,7 +45,7 @@ public class GameWindow : OpenTK.GameWindow
         if (main == null)
             main = this;
     }
-    public GameWindow(
+    public MyGameWindow(
         int width, int height,
         GraphicsMode mode,
         string title,
@@ -72,29 +75,39 @@ public class GameWindow : OpenTK.GameWindow
         GL.ClearColor(Color4.DimGray);
         GL.DebugMessageCallback(OnDebugMessage, IntPtr.Zero);
 
+        Time.Init();
+        ShaderProgram.Init();
+        Gizmos.Init();
+
         Audio.Init();
         MusicPlayer.Init("Content\\Music\\Bomberman 64");
 
-        var vertShaderCode = File.ReadAllText("Shaders/Texture.vert");
-        var vertShader = new Shader(ShaderType.VertexShader, vertShaderCode);
-
-        var fragShaderCode = File.ReadAllText("Shaders/Texture.frag");
-        var fragShader = new Shader(ShaderType.FragmentShader, fragShaderCode);
-
-        m_ShaderProgram = new ShaderProgram(vertShader, fragShader);
+        m_Canvas = new Canvas(this);
 
         m_Texture = new Texture(
-            "Content\\Pictures\\gradient.png", TextureMinFilter.Nearest, TextureMagFilter.Nearest);
+            "Content\\Pictures\\Brock.jpg", TextureMinFilter.Nearest, TextureMagFilter.Nearest);
 
-        m_ShaderProgram.Use();
-        var location = m_ShaderProgram.GetUniformLocation("lightDirection");
+        var animation =
+            new Animation(
+                TextureMinFilter.Nearest,
+                TextureMagFilter.Nearest,
+                "Content\\Pictures\\CartoonDancing.gif");
+        animation.BufferData();
+
+        var button = new Button(m_Canvas, animation, null, null);
+        button.transform.eulerAngles = new Vector3(-90f, 0f, 0f);
+        //button.transform.localScale = new Vector3(100f, 100f, 100f);
+        button.transform.position = new Vector3(500f, 500f, 0f);
+
+        ShaderProgram.texture.Use();
+        var location = ShaderProgram.texture.GetUniformLocation("lightDirection");
         GL.Uniform3(location, 1f, 0.5f, 0f);
 
         var mesh = Plane.GetMesh();
         m_Sun = new Model<Vertex>
         {
             mesh = mesh,
-            shader = m_ShaderProgram,
+            shader = ShaderProgram.texture,
             diffuseTexture = m_Texture
         };
         m_Sun.Bind();
@@ -106,7 +119,7 @@ public class GameWindow : OpenTK.GameWindow
         m_Earth = new Model<Vertex>
         {
             mesh = mesh,
-            shader = m_ShaderProgram,
+            shader = ShaderProgram.texture,
             diffuseTexture = m_Texture
         };
         m_Earth.Bind();
@@ -122,7 +135,7 @@ public class GameWindow : OpenTK.GameWindow
         m_Moon = new Model<Vertex>
         {
             mesh = mesh,
-            shader = m_ShaderProgram,
+            shader = ShaderProgram.texture,
             diffuseTexture = m_Texture
         };
         m_Moon.Bind();
@@ -159,22 +172,26 @@ public class GameWindow : OpenTK.GameWindow
                 m_Sun.transform.eulerAngles.X + 1f, m_Sun.transform.eulerAngles.Y, m_Sun.transform.eulerAngles.Z);
 
         m_Moon.transform.localScale = new Vector3(2.0f, 1.1f, 1.1f);
-        m_Moon.transform.eulerAngles = new Vector3(90f, 0f, 0f);
+        m_Moon.transform.eulerAngles = new Vector3(0f, 0f, 0f);
         m_Moon.transform.position = new Vector3(2f, 2f, 0f);
+
+        m_Canvas.Update();
     }
 
     protected override void OnKeyDown(KeyboardKeyEventArgs e)
     {
-
+        base.OnKeyDown(e);
     }
 
     protected override void OnMouseDown(MouseButtonEventArgs e)
     {
+        base.OnMouseDown(e);
         MusicPlayer.OnMouseDown(e);
     }
 
     protected override void OnMouseMove(MouseMoveEventArgs e)
     {
+        base.OnMouseMove(e);
         MusicPlayer.OnMouseMove(e);
     }
 
@@ -189,8 +206,6 @@ public class GameWindow : OpenTK.GameWindow
     {
         GL.Clear(ClearBufferMask.ColorBufferBit | ClearBufferMask.DepthBufferBit);
 
-        m_ShaderProgram.Use();
-
         foreach (var model in m_Models)
         {
             model.Bind();
@@ -201,6 +216,8 @@ public class GameWindow : OpenTK.GameWindow
         }
 
         MusicPlayer.Draw();
+
+        m_Canvas.Draw();
 
         SwapBuffers();
     }

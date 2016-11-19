@@ -1,5 +1,6 @@
 ﻿namespace Geometry
 {
+    using System.Collections.Generic;
     using System.Drawing;
     using System.Drawing.Imaging;
 
@@ -15,12 +16,16 @@
 
         private string m_Path;
 
-        private TextureMinFilter m_MinFilter;
-        private TextureMagFilter m_MagFilter;
+        protected TextureMinFilter m_MinFilter;
+        protected TextureMagFilter m_MagFilter;
 
-        private int m_ImageWidth;
-        private int m_ImageHeight;
+        private static readonly Dictionary<string, BitmapData> s_BitmapData =
+            new Dictionary<string, BitmapData>();
 
+        public virtual int width { get; private set; }
+        public virtual int height { get; private set; }
+
+        protected Texture() { }
         public Texture(string path, TextureMinFilter minFilter, TextureMagFilter magFilter)
         {
             m_MinFilter = minFilter;
@@ -31,7 +36,7 @@
             GL.GenTextures(1, out m_Handle);
         }
 
-        public void Bind()
+        public virtual void Bind()
         {
             GL.BindTexture(TextureTarget.Texture2D, m_Handle);
         }
@@ -40,36 +45,56 @@
             GL.BindTexture(TextureTarget.Texture2D, 0);
         }
 
-        public void BufferData()
+        public virtual void BufferData()
         {
-            Debug.Log("Loading image at " + m_Path);
+            var data = GetBitmapData(m_Path);
 
-            var bitmap = new Bitmap(m_Path);
-            BitmapData data =
-                bitmap.LockBits(
-                    new Rectangle(0, 0, bitmap.Width, bitmap.Height),
-                    ImageLockMode.ReadOnly, System.Drawing.Imaging.PixelFormat.Format32bppRgb);
-
-            m_ImageWidth = bitmap.Width;
-            m_ImageHeight = bitmap.Height;
+            width = data.Width;
+            height = data.Height;
 
             GL.TexImage2D(
                 TextureTarget.Texture2D,
                 0,
                 PixelInternalFormat.Rgba,
-                m_ImageWidth,
-                m_ImageHeight,
+                width,
+                height,
                 0,
-                PixelFormat.Rgba,
+                PixelFormat.Bgra,
                 PixelType.UnsignedByte,
                 data.Scan0);
 
-            bitmap.UnlockBits(data);
+            // bitmap.UnlockBits(data);
 
             GL.TexParameter(
                 TextureTarget.Texture2D, TextureParameterName.TextureMinFilter, (int)m_MinFilter);
             GL.TexParameter(
                 TextureTarget.Texture2D, TextureParameterName.TextureMagFilter, (int)m_MagFilter);
+        }
+
+        protected static BitmapData GetBitmapData(string path)
+        {
+            BitmapData bitmapData;
+
+            s_BitmapData.TryGetValue(path, out bitmapData);
+            if (bitmapData != null)
+                return bitmapData;
+
+            return CreateBitmapData(path);
+        }
+
+        protected static BitmapData CreateBitmapData(string path)
+        {
+            Debug.Log("Loading image at " + path);
+
+            var bitmap = new Bitmap(path);
+            var data =
+                bitmap.LockBits(
+                    new Rectangle(0, 0, bitmap.Width, bitmap.Height),
+                    ImageLockMode.ReadOnly, System.Drawing.Imaging.PixelFormat.Format32bppArgb);
+
+            s_BitmapData.Add(path, data);
+
+            return data;
         }
     }
 }

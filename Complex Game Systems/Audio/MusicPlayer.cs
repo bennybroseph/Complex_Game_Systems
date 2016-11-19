@@ -122,12 +122,12 @@ public static class MusicPlayer
         uint length;
         sound.getLength(out length, TIMEUNIT.MS);
 
-        uint f = (uint)((float)e.X / GameWindow.main.Width * length);
+        uint f = (uint)((float)e.X / MyGameWindow.main.Width * length);
         s_Channel.setPosition(f, TIMEUNIT.MS);
     }
     public static void OnMouseMove(MouseMoveEventArgs e)
     {
-        s_IsSelected = e.Y <= GameWindow.main.Height - 70f && e.Y >= GameWindow.main.Height - 87f;
+        s_IsSelected = e.Y <= MyGameWindow.main.Height - 70f && e.Y >= MyGameWindow.main.Height - 87f;
     }
 
     public static void Draw()
@@ -146,14 +146,14 @@ public static class MusicPlayer
         var extraSpace = s_IsSelected ? 5 : 0;
 
         Gizmos.DrawRectangle(
-            new Vector2(0f, GameWindow.main.Height - 75f),
-            new Vector2(GameWindow.main.Width, GameWindow.main.Height - 77f - extraSpace),
+            new Vector2(0f, MyGameWindow.main.Height - 75f),
+            new Vector2(MyGameWindow.main.Width, MyGameWindow.main.Height - 77f - extraSpace),
             Color4.BlueViolet,
             Color4.BlueViolet);
 
         Gizmos.DrawRectangle(
-            new Vector2(0f, GameWindow.main.Height - 75f),
-            new Vector2(proportion * GameWindow.main.Width, GameWindow.main.Height - 77f - extraSpace),
+            new Vector2(0f, MyGameWindow.main.Height - 75f),
+            new Vector2(proportion * MyGameWindow.main.Width, MyGameWindow.main.Height - 77f - extraSpace),
             Color4.White,
             Color4.White);
 

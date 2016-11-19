@@ -13,7 +13,7 @@
         public Matrix4Uniform(string name)
         {
             m_Matrix = Matrix4.Identity;
-            this.m_Name = name;
+            m_Name = name;
         }
 
         public void Set(ShaderProgram program)

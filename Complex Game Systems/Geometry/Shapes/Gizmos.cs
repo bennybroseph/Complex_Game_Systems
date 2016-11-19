@@ -7,10 +7,13 @@
     using OpenTK.Graphics;
     using OpenTK.Graphics.OpenGL;
 
-    using GameWindow = GameWindow;
-
     public static class Gizmos
     {
+        public static void Init()
+        {
+            Plane.Init();
+        }
+
         public static void DrawRectangle(Vector2 start, Vector2 end, Color4 colorStart, Color4 colorEnd)
         {
             var size = end - start;
@@ -26,23 +29,24 @@
 
             start =
                 new Vector2(
-                    start.X - (GameWindow.main.Width / 2f),
-                    GameWindow.main.Height / 2f - start.Y);
+                    start.X - (MyGameWindow.main.Width / 2f),
+                    MyGameWindow.main.Height / 2f - start.Y);
             end =
                 new Vector2(
-                    end.X - GameWindow.main.Width / 2f,
-                    GameWindow.main.Height / 2f - end.Y);
+                    end.X - MyGameWindow.main.Width / 2f,
+                    MyGameWindow.main.Height / 2f - end.Y);
 
             var size = end - start;
 
             GL.PushMatrix();
             {
                 var matrix =
-                    Matrix4.CreateOrthographic(GameWindow.main.Width, GameWindow.main.Height, -1f, 1f);
+                    Matrix4.CreateOrthographic(MyGameWindow.main.Width, MyGameWindow.main.Height, -1f, 1f);
                 GL.LoadMatrix(ref matrix);
 
                 var translate =
-                    Matrix4.CreateTranslation(-GameWindow.main.Width / 2f, GameWindow.main.Height / 2f, 0f);
+                    Matrix4.CreateTranslation(
+                        -MyGameWindow.main.Width / 2f, MyGameWindow.main.Height / 2f, 0f);
                 GL.MultMatrix(ref translate);
 
                 GL.MultMatrix(ref trasform);
@@ -77,7 +81,7 @@
             GL.PushMatrix();
             {
                 var matrix =
-                    Matrix4.CreateOrthographic(GameWindow.main.Width, GameWindow.main.Height, -1f, 1f);
+                    Matrix4.CreateOrthographic(MyGameWindow.main.Width, MyGameWindow.main.Height, -1f, 1f);
                 GL.LoadMatrix(ref matrix);
 
                 GL.Begin(primitiveType);
@@ -88,8 +92,8 @@
 
                         var vertex =
                             new Vector2(
-                                vertexes[i].X - (GameWindow.main.Width / 2f),
-                                GameWindow.main.Height / 2f - vertexes[i].Y);
+                                vertexes[i].X - (MyGameWindow.main.Width / 2f),
+                                MyGameWindow.main.Height / 2f - vertexes[i].Y);
                         GL.Vertex2(vertex);
                     }
                 }

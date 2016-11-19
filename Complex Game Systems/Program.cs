@@ -23,7 +23,7 @@ internal static class Program
         AllocConsole();
 #endif
 
-        var window = new GameWindow(
+        var window = new MyGameWindow(
             1600,
             900,
             GraphicsMode.Default,

@@ -26,16 +26,25 @@
             {
                 GL.ActiveTexture(TextureUnit.Texture0);
                 normalTexture.Bind();
+
+                var location = shader.GetUniformLocation("normalMap");
+                GL.Uniform1(location, 0);
             }
             if (diffuseTexture != null)
             {
                 GL.ActiveTexture(TextureUnit.Texture1);
                 diffuseTexture.Bind();
+
+                var location = shader.GetUniformLocation("diffuseMap");
+                GL.Uniform1(location, 1);
             }
             if (specularTexture != null)
             {
                 GL.ActiveTexture(TextureUnit.Texture2);
                 specularTexture.Bind();
+
+                var location = shader.GetUniformLocation("specularMap");
+                GL.Uniform1(location, 2);
             }
 
             mesh.Bind();
@@ -54,34 +63,17 @@
             shader.Use();
 
             if (normalTexture != null)
-            {
                 normalTexture.BufferData();
-
-                var location = shader.GetUniformLocation("normalMap");
-                GL.Uniform1(location, 0);
-            }
             if (diffuseTexture != null)
-            {
                 diffuseTexture.BufferData();
-
-                var location = shader.GetUniformLocation("diffuseMap");
-                GL.Uniform1(location, 1);
-            }
             if (specularTexture != null)
-            {
                 specularTexture.BufferData();
-
-                var location = shader.GetUniformLocation("specularMap");
-                GL.Uniform1(location, 2);
-            }
 
             mesh.BufferData(shader);
         }
 
         public void Draw()
         {
-            shader.Use();
-
             // get uniform location
             var location = shader.GetUniformLocation("projectionMatrix");
             var tempMatrix = transform.worldSpaceMatrix * Camera.main.viewProjection;

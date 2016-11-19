@@ -11,19 +11,25 @@
     {
         private const float DEFAULT_SEGMENTS = 1f;
 
-        private static Dictionary<string, Mesh<Vertex>> s_Meshes = new Dictionary<string, Mesh<Vertex>>();
+        private static readonly Dictionary<string, Mesh<Vertex>> s_Meshes =
+            new Dictionary<string, Mesh<Vertex>>();
 
         public static void Init()
         {
-            CreateMeshIfNeeded();
+            CreateMesh(DEFAULT_SEGMENTS);
         }
 
         public static Mesh<Vertex> GetMesh(float segments = DEFAULT_SEGMENTS)
         {
             var key = CreateKey(segments);
-            CreateMeshIfNeeded(segments);
 
-            return s_Meshes[key];
+            Mesh<Vertex> mesh;
+
+            s_Meshes.TryGetValue(key, out mesh);
+            if (mesh != null)
+                return mesh;
+
+            return CreateMesh(segments);
         }
 
         private static IEnumerable<Vertex> GenVertexes(float segments)
@@ -32,6 +38,7 @@
             {
                 for (var y = 0f; y < segments; ++y)
                 {
+                    // Top Left
                     yield return
                         new Vertex(
                             new Vector3((x - segments / 2f) / segments, 0f, (y - segments / 2f) / segments),
@@ -40,6 +47,7 @@
                             new Vector3(0f, 1f, 0f),
                             new Vector3(1f, 0f, 0f));
 
+                    // Top Right
                     yield return
                         new Vertex(
                             new Vector3(
@@ -49,6 +57,7 @@
                             new Vector3(0f, 1f, 0f),
                             new Vector3(1f, 0f, 0f));
 
+                    // Bottom Right
                     yield return
                         new Vertex(
                             new Vector3(
@@ -87,12 +96,9 @@
             return segments.ToString(CultureInfo.InvariantCulture);
         }
 
-        private static bool CreateMeshIfNeeded(float segments = DEFAULT_SEGMENTS)
+        private static Mesh<Vertex> CreateMesh(float segments)
         {
             var key = CreateKey(segments);
-
-            if (s_Meshes.ContainsKey(key))
-                return false;
 
             var mesh =
                 new Mesh<Vertex>(
@@ -107,7 +113,7 @@
 
             s_Meshes.Add(key, mesh);
 
-            return true;
+            return mesh;
         }
     }
 }
