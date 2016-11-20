@@ -1,35 +1,32 @@
 ﻿namespace UI
 {
     using Geometry;
-    using Geometry.Shapes;
-
-    using OpenTK;
-    using OpenTK.Graphics;
+    using OpenTK.Input;
 
     public class Button : Image
     {
+        public delegate void OnPush();
+
+        private OnPush m_OnPushDelegate;
+
         public Button(
             Canvas canvas,
 
+            OnPush onPushDelegate,
+
             Texture defaultTexture,
             Texture highlighedTexture,
-            Texture pushedTexture) : base(canvas, defaultTexture, highlighedTexture, pushedTexture) { }
-
-        public override void Update()
+            Texture pushedTexture) : base(canvas, defaultTexture, highlighedTexture, pushedTexture)
         {
-            base.Update();
+            m_OnPushDelegate = onPushDelegate;
         }
 
-        //public override void Draw()
-        //{
-        //    var color = m_State == ElementState.Hovered ? Color4.Blue : Color4.White;
-        //    if (m_State == ElementState.Selected)
-        //        color = Color4.Black;
+        protected override void OnMouseUp(object sender, MouseButtonEventArgs mouseButtonEventArgs)
+        {
+            if (m_State == ElementState.Selected)
+                m_OnPushDelegate();
 
-        //    Gizmos.DrawRectangle(
-        //        transform.position.Xy - new Vector2(0.5f),
-        //        transform.position.Xy + new Vector2(0.5f),
-        //        color, color, true, transform.worldSpaceMatrix * m_Canvas.projection);
-        //}
+            base.OnMouseUp(sender, mouseButtonEventArgs);
+        }
     }
 }

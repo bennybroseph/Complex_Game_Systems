@@ -16,7 +16,7 @@ public static class MusicPlayer
     private static Equalizer s_Equalizer;
     private static List<Sound> s_MusicList = new List<Sound>();
 
-    private static int s_CurrentIndex = -1;
+    private static int s_CurrentIndex;
 
     private static bool s_IsSelected;
 
@@ -30,16 +30,21 @@ public static class MusicPlayer
             Sound newSound;
             var result = Audio.LoadSound(path + "\\" + fileInfo.Name, out newSound);
 
-            if (result == RESULT.OK)
-                s_MusicList.Add(newSound);
+            if (result != RESULT.OK)
+                continue;
+
+            if (s_Channel == null)
+            {
+                Audio.LoadChannel(newSound, out s_Channel);
+                s_Equalizer = new Equalizer(s_Channel);
+            }
+
+            s_MusicList.Add(newSound);
         }
     }
 
     public static RESULT Play()
     {
-        if (s_Channel == null)
-            return CreateChannel();
-
         bool isPlaying;
         var result = s_Channel.isPlaying(out isPlaying);
 
@@ -47,16 +52,10 @@ public static class MusicPlayer
     }
     public static RESULT Pause()
     {
-        if (s_Channel == null)
-            return RESULT.ERR_CHANNEL_ALLOC;
-
         return s_Channel.setPaused(true);
     }
     public static RESULT TogglePause()
     {
-        if (s_Channel == null)
-            Play();
-
         return Audio.TogglePause(s_Channel);
     }
 

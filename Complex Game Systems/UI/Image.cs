@@ -5,6 +5,7 @@
 
     using OpenTK;
     using OpenTK.Graphics.OpenGL;
+    using Utility;
 
     public class Image : Element
     {
@@ -21,6 +22,9 @@
                 var texture = m_State == ElementState.Default ? m_DefaultTexture : m_HoveredTexture;
                 if (m_State == ElementState.Selected)
                     texture = m_PushedTexture;
+
+                if (texture == null)
+                    texture = m_DefaultTexture;
 
                 return texture;
             }

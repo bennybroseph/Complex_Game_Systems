@@ -75,6 +75,9 @@ public class MyGameWindow : GameWindow
         GL.ClearColor(Color4.DimGray);
         GL.DebugMessageCallback(OnDebugMessage, IntPtr.Zero);
 
+        GL.Enable(EnableCap.Blend);
+        GL.BlendFunc(BlendingFactorSrc.SrcAlpha, BlendingFactorDest.OneMinusSrcAlpha);
+
         Time.Init();
         ShaderProgram.Init();
         Gizmos.Init();
@@ -84,20 +87,70 @@ public class MyGameWindow : GameWindow
 
         m_Canvas = new Canvas(this);
 
-        m_Texture = new Texture(
-            "Content\\Pictures\\Brock.jpg", TextureMinFilter.Nearest, TextureMagFilter.Nearest);
+        m_Texture =
+            new Texture("Content\\Pictures\\Brock.jpg", TextureMinFilter.Nearest, TextureMagFilter.Nearest);
 
-        var animation =
+        var duane =
             new Animation(
                 TextureMinFilter.Nearest,
                 TextureMagFilter.Nearest,
-                "Content\\Pictures\\CartoonDancing.gif");
-        animation.BufferData();
+                "Content\\Pictures\\Duane.gif");
+        duane.BufferData();
 
-        var button = new Button(m_Canvas, animation, null, null);
-        button.transform.eulerAngles = new Vector3(-90f, 0f, 0f);
+        var sheGotTheMoves =
+            new Animation(
+                TextureMinFilter.Nearest,
+                TextureMagFilter.Nearest,
+                "Content\\Pictures\\SheGotTheMoves.gif");
+        sheGotTheMoves.BufferData();
+
+        var dancing = new Image(m_Canvas, duane, null, sheGotTheMoves);
+        dancing.transform.eulerAngles = new Vector3(-90f, 0f, 0f);
         //button.transform.localScale = new Vector3(100f, 100f, 100f);
-        button.transform.position = new Vector3(500f, 500f, 0f);
+        dancing.transform.position = 
+            new Vector3(dancing.transform.localScale.X /2f, dancing.transform.localScale.Z / 2f, 0f);
+
+        var playTexture =
+            new Texture(
+                "Content\\Pictures\\MediaPlayer\\Play.png",
+                TextureMinFilter.Linear, TextureMagFilter.Linear);
+        var nextTexture =
+            new Texture(
+                "Content\\Pictures\\MediaPlayer\\Next.png",
+                TextureMinFilter.Linear, TextureMagFilter.Linear);
+        var previousTexture =
+            new Texture(
+                "Content\\Pictures\\MediaPlayer\\Previous.png",
+                TextureMinFilter.Linear, TextureMagFilter.Linear);
+
+        var play =
+            new Button(
+                m_Canvas,
+                () => MusicPlayer.TogglePause(), playTexture, null, null);
+        play.transform.eulerAngles = new Vector3(-90f, 0f, 0f);
+        play.transform.localScale = new Vector3(50f, 1f, 50f);
+        play.transform.position =
+            new Vector3(Width / 2f, -10f + Height - play.transform.localScale.Z / 2f, 0f);
+
+        var next =
+            new Button(
+                m_Canvas,
+                () => MusicPlayer.NextTrack(), nextTexture, null, null);
+        next.transform.eulerAngles = new Vector3(-90f, 0f, 0f);
+        next.transform.localScale = new Vector3(50f, 1f, 50f);
+        next.transform.position =
+            new Vector3(
+                play.transform.position.X + 100f, -10f + Height - next.transform.localScale.Z / 2f, 0f);
+
+        var previous =
+            new Button(
+                m_Canvas,
+                () => MusicPlayer.PreviousTrack(), previousTexture, null, null);
+        previous.transform.eulerAngles = new Vector3(-90f, 0f, 0f);
+        previous.transform.localScale = new Vector3(50f, 1f, 50f);
+        previous.transform.position =
+            new Vector3(
+                play.transform.position.X - 100f, -10f + Height - previous.transform.localScale.Z / 2f, 0f);
 
         ShaderProgram.texture.Use();
         var location = ShaderProgram.texture.GetUniformLocation("lightDirection");
@@ -152,7 +205,7 @@ public class MyGameWindow : GameWindow
         m_Camera.SetLookAt(new Vector3(0f, 5f, 10f), Vector3.Zero, new Vector3(0f, 1f, 0f));
         m_Camera.SetPerspective(MathHelper.PiOver4, Width / (float)Height, 0.1f, 75f);
 
-        MusicPlayer.Play();
+        //MusicPlayer.Play();
 
         RenderFrame += OnRenderFrameEvent;
     }
@@ -210,7 +263,7 @@ public class MyGameWindow : GameWindow
         {
             model.Bind();
             {
-                model.Draw();
+                //model.Draw();
             }
             model.UnBind();
         }

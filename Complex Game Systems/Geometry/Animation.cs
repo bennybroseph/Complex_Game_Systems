@@ -48,7 +48,7 @@
         public override void Bind()
         {
             m_DeltaIndexTime += Time.deltaTime;
-            if (m_DeltaIndexTime > animationTimeScale * (m_TextureInfo.Count / 1000f * 3f))
+            if (m_DeltaIndexTime > 0.03f)
             {
                 m_CurrentIndex++;
                 m_DeltaIndexTime = 0f;

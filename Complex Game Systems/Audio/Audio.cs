@@ -33,10 +33,17 @@ public static class Audio
             "Initializing System... Result: " + m_FMODSystem.init(32, INITFLAGS.NORMAL, (IntPtr)0));
     }
 
+    public static RESULT LoadChannel(Sound sound, out Channel channel)
+    {
+        var result = m_FMODSystem.playSound(sound, null, true, out channel);
+        Debug.Log("Loading channel... Result: " + result);
+
+        return result;
+    }
+
     public static RESULT LoadSound(string path, out Sound sound)
     {
         var result = m_FMODSystem.createStream(path, MODE.DEFAULT, out sound);
-
         Debug.Log("Loading " + path + "... Result: " + result);
 
         return result;

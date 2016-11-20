@@ -29,19 +29,19 @@
             m_Canvas.gameWindow.MouseUp += OnMouseUp;
         }
 
-        private void OnMouseUp(object sender, MouseButtonEventArgs mouseButtonEventArgs)
+        protected virtual void OnMouseUp(object sender, MouseButtonEventArgs mouseButtonEventArgs)
         {
             if (m_State == ElementState.Selected)
                 m_State = ElementState.Hovered;
         }
 
-        private void OnMouseDown(object sender, MouseButtonEventArgs mouseButtonEventArgs)
+        protected virtual void OnMouseDown(object sender, MouseButtonEventArgs mouseButtonEventArgs)
         {
             if (m_State == ElementState.Hovered)
                 m_State = ElementState.Selected;
         }
 
-        private void OnMouseMoveEvent(object sender, MouseMoveEventArgs mouseMoveEventArgs)
+        protected virtual void OnMouseMoveEvent(object sender, MouseMoveEventArgs mouseMoveEventArgs)
         {
             m_PreviouState = m_State;
 
@@ -55,8 +55,8 @@
 
             if (mouseX >= transform.position.X - transform.localScale.X / 2f &&
                 mouseX <= transform.position.X + transform.localScale.X / 2f &&
-                mouseY <= transform.position.Y + transform.localScale.Y / 2f &&
-                mouseY >= transform.position.Y - transform.localScale.Y / 2f)
+                mouseY <= transform.position.Y + transform.localScale.Z / 2f &&
+                mouseY >= transform.position.Y - transform.localScale.Z / 2f)
             {
                 if (m_State == ElementState.Default)
                     m_State = ElementState.Hovered;
