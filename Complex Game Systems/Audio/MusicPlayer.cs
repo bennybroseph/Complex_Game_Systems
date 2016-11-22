@@ -18,10 +18,14 @@ public static class MusicPlayer
 
     private static int s_CurrentIndex;
 
-    private static bool s_IsSelected;
+    private static bool s_IsHovered;
 
     public static void Init(string path = "Content\\Music")
     {
+        MyGameWindow.main.KeyDown += OnKeyDown;
+        MyGameWindow.main.MouseDown += OnMouseDown;
+        MyGameWindow.main.MouseMove += OnMouseMove;
+
         var directory = new DirectoryInfo(path);
         var files = directory.GetFiles().ToList();
 
@@ -110,9 +114,15 @@ public static class MusicPlayer
         s_Equalizer.Update();
     }
 
-    public static void OnMouseDown(MouseButtonEventArgs e)
+    private static void OnKeyDown(object sender, KeyboardKeyEventArgs keyboardKeyEventArgs)
     {
-        if (!s_IsSelected || e.Button != MouseButton.Left)
+        if (keyboardKeyEventArgs.Key == Key.Space)
+            TogglePause();
+    }
+
+    private static void OnMouseDown(object sender, MouseButtonEventArgs mouseButtonEventArgs)
+    {
+        if (!s_IsHovered || mouseButtonEventArgs.Button != MouseButton.Left)
             return;
 
         Sound sound;
@@ -121,12 +131,14 @@ public static class MusicPlayer
         uint length;
         sound.getLength(out length, TIMEUNIT.MS);
 
-        uint f = (uint)((float)e.X / MyGameWindow.main.Width * length);
+        uint f = (uint)((float)mouseButtonEventArgs.X / MyGameWindow.main.Width * length);
         s_Channel.setPosition(f, TIMEUNIT.MS);
     }
-    public static void OnMouseMove(MouseMoveEventArgs e)
+    private static void OnMouseMove(object sender, MouseMoveEventArgs mouseMoveEventArgs)
     {
-        s_IsSelected = e.Y <= MyGameWindow.main.Height - 70f && e.Y >= MyGameWindow.main.Height - 87f;
+        s_IsHovered =
+            mouseMoveEventArgs.Y <= MyGameWindow.main.Height - 70f &&
+            mouseMoveEventArgs.Y >= MyGameWindow.main.Height - 87f;
     }
 
     public static void Draw()
@@ -142,7 +154,7 @@ public static class MusicPlayer
 
         var proportion = (float)position / length;
 
-        var extraSpace = s_IsSelected ? 5 : 0;
+        var extraSpace = s_IsHovered ? 5 : 0;
 
         Gizmos.DrawRectangle(
             new Vector2(0f, MyGameWindow.main.Height - 75f),

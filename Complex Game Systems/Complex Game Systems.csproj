@@ -146,6 +146,9 @@
     </None>
   </ItemGroup>
   <ItemGroup>
+    <Content Include="Content\Music\Songs\ACDC - Thunderstruck.mp3">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Content>
     <Content Include="Content\Music\Extreme bas test, bazz test , base test.mp3">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </Content>

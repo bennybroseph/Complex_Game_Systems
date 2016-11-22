@@ -83,7 +83,7 @@ public class MyGameWindow : GameWindow
         Gizmos.Init();
 
         Audio.Init();
-        MusicPlayer.Init("Content\\Music\\Bomberman 64");
+        MusicPlayer.Init("Content\\Music\\Songs");
 
         m_Canvas = new Canvas(this);
 
@@ -107,7 +107,7 @@ public class MyGameWindow : GameWindow
         var dancing = new Image(m_Canvas, duane, null, sheGotTheMoves);
         dancing.transform.eulerAngles = new Vector3(-90f, 0f, 0f);
         //button.transform.localScale = new Vector3(100f, 100f, 100f);
-        dancing.transform.position = 
+        dancing.transform.position =
             new Vector3(dancing.transform.localScale.X /2f, dancing.transform.localScale.Z / 2f, 0f);
 
         var playTexture =
@@ -205,8 +205,6 @@ public class MyGameWindow : GameWindow
         m_Camera.SetLookAt(new Vector3(0f, 5f, 10f), Vector3.Zero, new Vector3(0f, 1f, 0f));
         m_Camera.SetPerspective(MathHelper.PiOver4, Width / (float)Height, 0.1f, 75f);
 
-        //MusicPlayer.Play();
-
         RenderFrame += OnRenderFrameEvent;
     }
 
@@ -229,23 +227,6 @@ public class MyGameWindow : GameWindow
         m_Moon.transform.position = new Vector3(2f, 2f, 0f);
 
         m_Canvas.Update();
-    }
-
-    protected override void OnKeyDown(KeyboardKeyEventArgs e)
-    {
-        base.OnKeyDown(e);
-    }
-
-    protected override void OnMouseDown(MouseButtonEventArgs e)
-    {
-        base.OnMouseDown(e);
-        MusicPlayer.OnMouseDown(e);
-    }
-
-    protected override void OnMouseMove(MouseMoveEventArgs e)
-    {
-        base.OnMouseMove(e);
-        MusicPlayer.OnMouseMove(e);
     }
 
     protected void OnDebugMessage(

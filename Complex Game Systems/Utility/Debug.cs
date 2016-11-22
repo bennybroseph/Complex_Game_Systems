@@ -11,7 +11,6 @@
 
         public static void Init()
         {
-            s_Stopwatch = Stopwatch.StartNew();
             WriteToLog("Debug Initialized");
         }
 
@@ -66,7 +65,7 @@
         {
             var traceString = caller + " at line " + lineNumber + " (" + filePath + ")";
 
-            var time = s_Stopwatch.Elapsed;
+            var time = Time.timeSpan;
             var timeString =
                 string.Format("[{0:00}:{1:00}:{2:000}] - ", time.Minutes, time.Seconds, time.Milliseconds);
 
