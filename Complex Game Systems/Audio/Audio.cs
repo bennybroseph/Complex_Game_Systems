@@ -110,6 +110,11 @@ public static class Audio
         return m_FMODSystem.createDSPByType(dspType, out dsp);
     }
 
+    public static RESULT SetVolume(Channel channel, float newVolume)
+    {
+        return channel.setVolume(newVolume);
+    }
+
     private static RESULT LogError(
         object obj, RESULT result,
         [CallerLineNumber] int lineNumber = 0,

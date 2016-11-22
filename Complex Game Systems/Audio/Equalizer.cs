@@ -24,7 +24,7 @@ public class Equalizer
     private const float INNER_MAX_RADIUS = 50;
 
     private const float OUTER_MIN_RADIUS = 0f;
-    private const float OUTER_MAX_RADIUS = 100f;
+    private const float OUTER_MAX_RADIUS = 200;
 
     private const float SPECTRUM_MIN = 0.0075f;
 
@@ -39,16 +39,18 @@ public class Equalizer
     private float[] m_CurrentBarValue;
 
     private float m_MaxValue;
+    private float m_TotalMaxValue;
+
     private float m_RadiusValue;
 
     private bool m_IsBeat;
     private float m_BeatVolume;
 
-    private float m_BeatThresholdVolume = 0.15f;
-    private float m_BeatMinContribution = 0.6f;
+    private float m_BeatThresholdVolume = 0.175f;
+    private float m_BeatMinContribution = 0.5f;
     private float m_BeatPostIgnore = 250f;
 
-    private float m_FrequencyThreshold = 150f;
+    private float m_FrequencyThreshold = 125f;
     private int m_BeatMaxIndex;
 
     private int m_LastBeat;
@@ -68,7 +70,7 @@ public class Equalizer
 
         Audio.CreateDSP(DSP_TYPE.FFT, out m_DSP);
         m_DSP.setParameterInt((int)DSP_FFT.WINDOWSIZE, SAMPLE_SIZE);
-        m_Channel.addDSP(0, m_DSP);
+        m_Channel.addDSP(CHANNELCONTROL_DSP_INDEX.TAIL, m_DSP);
 
         m_Channel.getFrequency(out m_Frequency);
         m_BeatMaxIndex = (int)Math.Ceiling(m_FrequencyThreshold / (m_Frequency / SAMPLE_SIZE));
@@ -102,19 +104,28 @@ public class Equalizer
 
     private void CalculateMaxValue()
     {
+        m_MaxValue = 0f;
         foreach (var value in m_SpectrumTotal)
             if (value > m_MaxValue)
                 m_MaxValue = value;
+
+        if (m_MaxValue > m_TotalMaxValue)
+            m_TotalMaxValue = m_MaxValue;
     }
     private bool CalculateBeat()
     {
         var beatAverage = 0f;
+        var oldBeatAverage = 0f;
         for (var i = 0; i < m_BeatMaxIndex; ++i)
-            beatAverage += m_SpectrumTotal[i] - m_OldSpectrumTotal[i];
+        {
+            beatAverage += m_SpectrumTotal[i];
+            oldBeatAverage += m_OldSpectrumTotal[i];
+        }
         beatAverage /= m_BeatMaxIndex;
+        oldBeatAverage /= m_BeatMaxIndex;
 
-        if ((beatAverage / m_MaxValue >= m_BeatMinContribution || beatAverage >= m_BeatThresholdVolume) &&
-            m_LastBeat == 0)
+        Console.Write(beatAverage + " ");
+        if (beatAverage >= m_BeatThresholdVolume && beatAverage - oldBeatAverage >= 0.05f && m_LastBeat == 0)
         {
             m_BeatVolume = beatAverage;
             m_LastBeat = (int)Time.time;
@@ -128,6 +139,18 @@ public class Equalizer
         return false;
     }
 
+    private void CalculateRadius()
+    {
+        var tempRadius = m_BeatVolume * INNER_MAX_RADIUS;
+        if (m_IsBeat && tempRadius > m_RadiusValue)
+            m_RadiusValue = tempRadius;
+        else
+            m_RadiusValue -= RADIUS_DECAY * Time.deltaTime;
+
+        if (m_RadiusValue < 0f)
+            m_RadiusValue = 0f;
+    }
+
     private void DrawCircleBar()
     {
         var screenOffset = new Vector2(MyGameWindow.main.Width / 2f, MyGameWindow.main.Height / 2f);
@@ -138,15 +161,15 @@ public class Equalizer
             var start =
                 CalculatePoint(i / (SAMPLE_SIZE / 3f), INNER_MIN_RADIUS + m_RadiusValue, screenOffset);
 
-            var barValue = OUTER_MAX_RADIUS * (m_SpectrumTotal[i] / m_MaxValue);
+            var barValue = OUTER_MAX_RADIUS * (m_SpectrumTotal[i] / m_TotalMaxValue);
 
             if (m_SpectrumTotal[i] < SPECTRUM_MIN)
                 barValue = OUTER_MIN_RADIUS;
 
             if (barValue >= m_CurrentBarValue[i])
             {
-                if (m_SpectrumTotal[i] - m_OldSpectrumTotal[i] > 0.0025f && m_OldSpectrumTotal[i] < 0.005f)
-                    barValue *= 2f;
+                //if (m_SpectrumTotal[i] - m_OldSpectrumTotal[i] > 0.025f && m_OldSpectrumTotal[i] < 0.005f)
+                //    barValue *= 2f;
                 m_CurrentBarValue[i] = barValue;
             }
             else
@@ -161,11 +184,11 @@ public class Equalizer
 
             var endColor =
                 new Color4(
-                    Color4.White.R + m_CurrentBarValue[i] / 100f
+                    Color4.White.R + m_CurrentBarValue[i] / OUTER_MAX_RADIUS
                     * (Color4.BlueViolet.R - Color4.White.R),
-                    Color4.White.G + m_CurrentBarValue[i] / 100f
+                    Color4.White.G + m_CurrentBarValue[i] / OUTER_MAX_RADIUS
                     * (Color4.BlueViolet.G - Color4.White.G),
-                    Color4.White.B + m_CurrentBarValue[i] / 100f
+                    Color4.White.B + m_CurrentBarValue[i] / OUTER_MAX_RADIUS
                     * (Color4.BlueViolet.B - Color4.White.B),
                     1f);
 
@@ -248,18 +271,6 @@ public class Equalizer
         vertexes.Add(vertexes.First());
 
         Gizmos.DrawCustomShape(vertexes, colors, PrimitiveType.TriangleStrip);
-    }
-
-    private void CalculateRadius()
-    {
-        var tempRadius = m_BeatVolume * INNER_MAX_RADIUS;
-        if (m_IsBeat && tempRadius > m_RadiusValue)
-            m_RadiusValue = tempRadius;
-        else
-            m_RadiusValue -= RADIUS_DECAY * Time.deltaTime;
-
-        if (m_RadiusValue < 0f)
-            m_RadiusValue = 0f;
     }
 
     private static Vector2 CalculatePoint(float percent, float radius, Vector2 offset = new Vector2())
