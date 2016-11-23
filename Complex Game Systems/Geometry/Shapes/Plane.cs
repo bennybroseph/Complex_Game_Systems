@@ -9,7 +9,7 @@
 
     public class Plane
     {
-        private const float DEFAULT_SEGMENTS = 1f;
+        protected const float DEFAULT_SEGMENTS = 1f;
 
         private static readonly Dictionary<string, Mesh<Vertex>> s_Meshes =
             new Dictionary<string, Mesh<Vertex>>();
@@ -78,7 +78,7 @@
                 }
             }
         }
-        private static IEnumerable<uint> GenIndexes(float segments)
+        protected static IEnumerable<uint> GenIndexes(float segments)
         {
             for (uint i = 0; i < segments * segments * 4f; i += 4)
             {
@@ -91,7 +91,7 @@
             }
         }
 
-        private static string CreateKey(float segments)
+        protected static string CreateKey(float segments)
         {
             return segments.ToString(CultureInfo.InvariantCulture);
         }

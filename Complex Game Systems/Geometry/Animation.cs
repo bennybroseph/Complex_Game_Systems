@@ -5,6 +5,7 @@
     using System.Drawing.Imaging;
     using System.Linq;
 
+    using OpenTK;
     using OpenTK.Graphics.OpenGL;
 
     using Utility;
@@ -118,6 +119,32 @@
             return CreateBitmapData(path);
         }
 
+        private static List<Bitmap> LoadBitmaps(string path)
+        {
+            Debug.Log("Loading images at " + path);
+
+            var newList = new List<Bitmap>();
+            using (var gif = Image.FromFile(path))
+            {
+                var dimension = new FrameDimension(gif.FrameDimensionsList[0]); // gets the GUID
+                var frameCount = gif.GetFrameCount(dimension); // total frames in the animation
+
+                for (var index = 0; index < frameCount; ++index)
+                {
+                    gif.SelectActiveFrame(dimension, index); // find the frame
+
+                    var bitmap = new Bitmap(gif.Width, gif.Height); // make a copy of it
+
+                    Graphics.FromImage(bitmap).DrawImage(gif, 0f, 0f);
+
+                    newList.Add(bitmap);
+                    bitmaps.Add(CreateBitmapKey(path, index), bitmap);
+                }
+            }
+
+            return newList;
+        }
+
         private static IEnumerable<BitmapData> CreateBitmapData(string path)
         {
             Debug.Log("Loading image at " + path);
@@ -145,6 +172,11 @@
                 s_BitmapData.Add(path, newList);
             }
             return newList;
+        }
+
+        protected static string CreateBitmapKey(string path, int index)
+        {
+            return path + " " + index;
         }
     }
 }

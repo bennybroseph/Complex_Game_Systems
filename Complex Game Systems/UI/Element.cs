@@ -55,8 +55,8 @@
 
             if (mouseX >= transform.position.X - transform.localScale.X / 2f &&
                 mouseX <= transform.position.X + transform.localScale.X / 2f &&
-                mouseY <= transform.position.Y + transform.localScale.Z / 2f &&
-                mouseY >= transform.position.Y - transform.localScale.Z / 2f)
+                mouseY <= transform.position.Y + transform.localScale.Y / 2f &&
+                mouseY >= transform.position.Y - transform.localScale.Y / 2f)
             {
                 if (m_State == ElementState.Default)
                     m_State = ElementState.Hovered;

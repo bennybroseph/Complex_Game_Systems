@@ -105,10 +105,8 @@ public class MyGameWindow : GameWindow
         sheGotTheMoves.BufferData();
 
         var dancing = new Image(m_Canvas, duane, null, sheGotTheMoves);
-        dancing.transform.eulerAngles = new Vector3(-90f, 0f, 0f);
-        //button.transform.localScale = new Vector3(100f, 100f, 100f);
         dancing.transform.position =
-            new Vector3(dancing.transform.localScale.X /2f, dancing.transform.localScale.Z / 2f, 0f);
+            new Vector3(dancing.transform.localScale.X /2f, dancing.transform.localScale.Y / 2f, 0f);
 
         var playTexture =
             new Texture(
@@ -127,30 +125,27 @@ public class MyGameWindow : GameWindow
             new Button(
                 m_Canvas,
                 () => MusicPlayer.TogglePause(), playTexture, null, null);
-        play.transform.eulerAngles = new Vector3(-90f, 0f, 0f);
-        play.transform.localScale = new Vector3(50f, 1f, 50f);
+        play.transform.localScale = new Vector3(50f, 50f, 1f);
         play.transform.position =
-            new Vector3(Width / 2f, -10f + Height - play.transform.localScale.Z / 2f, 0f);
+            new Vector3(Width / 2f, -10f + Height - play.transform.localScale.Y / 2f, 0f);
 
         var next =
             new Button(
                 m_Canvas,
                 () => MusicPlayer.NextTrack(), nextTexture, null, null);
-        next.transform.eulerAngles = new Vector3(-90f, 0f, 0f);
-        next.transform.localScale = new Vector3(50f, 1f, 50f);
+        next.transform.localScale = new Vector3(50f, 50f, 1f);
         next.transform.position =
             new Vector3(
-                play.transform.position.X + 100f, -10f + Height - next.transform.localScale.Z / 2f, 0f);
+                play.transform.position.X + 100f, -10f + Height - next.transform.localScale.Y / 2f, 0f);
 
         var previous =
             new Button(
                 m_Canvas,
                 () => MusicPlayer.PreviousTrack(), previousTexture, null, null);
-        previous.transform.eulerAngles = new Vector3(-90f, 0f, 0f);
-        previous.transform.localScale = new Vector3(50f, 1f, 50f);
+        previous.transform.localScale = new Vector3(50f, 50f, 1f);
         previous.transform.position =
             new Vector3(
-                play.transform.position.X - 100f, -10f + Height - previous.transform.localScale.Z / 2f, 0f);
+                play.transform.position.X - 100f, -10f + Height - previous.transform.localScale.Y / 2f, 0f);
 
         ShaderProgram.texture.Use();
         var location = ShaderProgram.texture.GetUniformLocation("lightDirection");
@@ -220,7 +215,9 @@ public class MyGameWindow : GameWindow
                 m_Sun.transform.position.X - 0.01f, m_Sun.transform.position.Y, m_Sun.transform.position.Z);
         m_Sun.transform.eulerAngles =
             new Vector3(
-                m_Sun.transform.eulerAngles.X + 1f, m_Sun.transform.eulerAngles.Y, m_Sun.transform.eulerAngles.Z);
+                m_Sun.transform.eulerAngles.X + 1f,
+                m_Sun.transform.eulerAngles.Y,
+                m_Sun.transform.eulerAngles.Z);
 
         m_Moon.transform.localScale = new Vector3(2.0f, 1.1f, 1.1f);
         m_Moon.transform.eulerAngles = new Vector3(0f, 0f, 0f);

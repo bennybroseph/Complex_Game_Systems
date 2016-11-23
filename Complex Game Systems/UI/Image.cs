@@ -41,7 +41,7 @@
             m_HoveredTexture = highlighedTexture;
             m_PushedTexture = pushedTexture;
 
-            m_Mesh = Plane.GetMesh();
+            m_Mesh = Quad.GetMesh();
 
             Bind();
             BufferData();
