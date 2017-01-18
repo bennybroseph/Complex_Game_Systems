@@ -17,6 +17,8 @@
 
         private readonly string m_Path;
 
+        private Size m_Size;
+
         protected TextureMinFilter m_MinFilter;
         protected TextureMagFilter m_MagFilter;
 
@@ -24,13 +26,12 @@
             new Dictionary<string, BitmapData>();
 
         public Vector2 position { get; private set; }
-        public Size size { get; private set; }
 
-        public virtual int width => size.Width;
-        public virtual int height => size.Height;
+        public virtual int width => m_Size.Width;
+        public virtual int height => m_Size.Height;
 
-        public static Dictionary<string, Bitmap> bitmaps
-        { get; private set; } = new Dictionary<string, Bitmap>();
+        public static Dictionary<string, Bitmap> bitmaps { get; private set; } =
+            new Dictionary<string, Bitmap>();
 
         protected Texture() { }
         public Texture(string path, TextureMinFilter minFilter, TextureMagFilter magFilter) :
@@ -45,7 +46,7 @@
             m_Path = path;
 
             this.position = position;
-            this.size = size;
+            m_Size = size;
 
             GL.GenTextures(1, out m_Handle);
         }
@@ -61,9 +62,10 @@
 
         public virtual void BufferData()
         {
-            var data = GetBitmapData(m_Path, position, size);
+            var data = GetBitmapData(m_Path);
 
-            size = new Size(data.Width, data.Height);
+            m_Size.Width = data.Width;
+            m_Size.Height = data.Height;
 
             GL.TexImage2D(
                 TextureTarget.Texture2D,
@@ -76,63 +78,38 @@
                 PixelType.UnsignedByte,
                 data.Scan0);
 
-            // bitmap.UnlockBits(data);
-
             GL.TexParameter(
                 TextureTarget.Texture2D, TextureParameterName.TextureMinFilter, (int)m_MinFilter);
             GL.TexParameter(
                 TextureTarget.Texture2D, TextureParameterName.TextureMagFilter, (int)m_MagFilter);
         }
 
-        public static Bitmap GetBitmap(string path)
-        {
-            Bitmap bitmap;
-            bitmaps.TryGetValue(path, out bitmap);
-            if (bitmap != null)
-                return bitmap;
-
-            return LoadBitmap(path);
-        }
-        public static BitmapData GetBitmapData(string path, Vector2 position, Size size)
+        protected static BitmapData GetBitmapData(string path)
         {
             BitmapData bitmapData;
+
             s_BitmapData.TryGetValue(path, out bitmapData);
             if (bitmapData != null)
                 return bitmapData;
 
-            var bitmap = GetBitmap(path);
-            if (size == Size.Empty)
-                size = bitmap.Size;
-
-            return CreateBitmapData(bitmap, path, position, size);
+            return CreateBitmapData(path);
         }
 
-        private static Bitmap LoadBitmap(string path)
+        protected static BitmapData CreateBitmapData(string path)
         {
             Debug.Log("Loading image at " + path);
 
-            var newBitmap = new Bitmap(path);
-            bitmaps.Add(path, newBitmap);
-
-            return newBitmap;
-        }
-
-        protected static BitmapData CreateBitmapData(Bitmap bitmap, string path, Vector2 position, Size size)
-        {
+            var bitmap = new Bitmap(path);
             var data =
                 bitmap.LockBits(
-                    new Rectangle((int)position.X, (int)position.Y, size.Width, size.Height),
+                    new Rectangle(0, 0, bitmap.Width, bitmap.Height),
                     ImageLockMode.ReadOnly, System.Drawing.Imaging.PixelFormat.Format32bppArgb);
 
-            s_BitmapData.Add(CreateDataKey(path, position, size), data);
+            s_BitmapData.Add(path, data);
 
             return data;
         }
 
-        private static string CreateBitmapKey(string path)
-        {
-            return path;
-        }
         protected static string CreateDataKey(string path, Vector2 position, Size size)
         {
             return path + " " + position + " " + size;

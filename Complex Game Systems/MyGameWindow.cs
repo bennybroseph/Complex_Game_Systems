@@ -104,9 +104,9 @@ public class MyGameWindow : GameWindow
                 "Content\\Pictures\\SheGotTheMoves.gif");
         sheGotTheMoves.BufferData();
 
-        var dancing = new Image(m_Canvas, duane, null, sheGotTheMoves);
-        dancing.transform.position =
-            new Vector3(dancing.transform.localScale.X /2f, dancing.transform.localScale.Y / 2f, 0f);
+        //var dancing = new Image(m_Canvas, duane, null, sheGotTheMoves);
+        //dancing.transform.position =
+        //    new Vector3(dancing.transform.localScale.X /2f, dancing.transform.localScale.Y / 2f, 0f);
 
         var playTexture =
             new Texture(
