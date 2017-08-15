@@ -1,7 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.IO;
-
+using BroEngine;
 using Geometry;
 using Geometry.Shapes;
 
@@ -14,6 +14,8 @@ using UI;
 
 using Utility;
 
+using GameObject = BroEngine.Component.GameObject;
+
 public class MyGameWindow : GameWindow
 {
     private readonly List<Model<Vertex>> m_Models = new List<Model<Vertex>>();
@@ -21,6 +23,8 @@ public class MyGameWindow : GameWindow
     private Model<Vertex> m_Sun;
     private Model<Vertex> m_Earth;
     private Model<Vertex> m_Moon;
+
+    private GameObject m_TestObject = new GameObject("Test Object");
 
     private Canvas m_Canvas;
 
@@ -200,6 +204,8 @@ public class MyGameWindow : GameWindow
         m_Camera.SetLookAt(new Vector3(0f, 5f, 10f), Vector3.Zero, new Vector3(0f, 1f, 0f));
         m_Camera.SetPerspective(MathHelper.PiOver4, Width / (float)Height, 0.1f, 75f);
 
+        m_TestObject.AddComponent<MeshRenderer>();
+
         RenderFrame += OnRenderFrameEvent;
     }
 
@@ -246,9 +252,11 @@ public class MyGameWindow : GameWindow
             model.UnBind();
         }
 
-        MusicPlayer.Draw();
+        //MusicPlayer.Draw();
 
-        m_Canvas.Draw();
+        //m_Canvas.Draw();
+
+        m_TestObject.GetComponent<MeshRenderer>().DrawGizmos();
 
         SwapBuffers();
     }

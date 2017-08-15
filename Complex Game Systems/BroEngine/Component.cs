@@ -1,6 +1,8 @@
-﻿namespace BroEngine
+﻿using System.Collections.Generic;
+
+namespace BroEngine
 {
-    public class Component : Object
+    public abstract partial class Component : Object
     {
         private GameObject m_GameObject;
 
@@ -14,5 +16,6 @@
         public bool CompareTag(string otherTag) => gameObject.CompareTag(otherTag);
 
         public T GetComponent<T>() where T : Component => gameObject.GetComponent<T>();
+        public IEnumerable<T> GetComponents<T>() where T : Component => gameObject.GetComponents<T>();
     }
 }

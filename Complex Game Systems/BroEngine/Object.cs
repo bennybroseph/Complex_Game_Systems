@@ -8,16 +8,15 @@
         private static List<Object> s_Objects = new List<Object>();
         private static List<bool> s_IDs = new List<bool> { true };
 
-        private string m_Name;
         private int m_ID;
 
-        public string name { get => m_Name; set => m_Name = value; }
+        public string name { get; set; }
 
         public Object(string name = "New Object")
         {
             s_Objects.Add(this);
 
-            m_Name = name;
+            this.name = name;
 
             var newID = -1;
             for (var i = 0; i < s_IDs.Count; i++)
