@@ -1,5 +1,7 @@
 ﻿namespace UI
 {
+    using BroEngine;
+
     using OpenTK;
     using OpenTK.Input;
 

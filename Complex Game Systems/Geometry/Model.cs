@@ -1,5 +1,7 @@
 ﻿namespace Geometry
 {
+    using BroEngine;
+
     using OpenTK;
     using OpenTK.Graphics;
     using OpenTK.Graphics.OpenGL;

@@ -10,6 +10,8 @@ using System.Text;
 
 namespace FMOD
 {
+    using BroEngine;
+
     /*
         FMOD version number.  Check this against FMOD::System::getVersion / System_GetVersion
         0xaaaabbcc -> aaaa = major version number.  bb = minor version number.  cc = development version number.
