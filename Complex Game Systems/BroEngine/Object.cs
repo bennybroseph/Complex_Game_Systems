@@ -8,7 +8,7 @@
         private static List<Object> s_Objects = new List<Object>();
         private static List<bool> s_IDs = new List<bool> { true };
 
-        private int m_ID;
+        protected int m_ID;
 
         public string name { get; set; }
 

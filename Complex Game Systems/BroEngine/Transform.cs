@@ -104,6 +104,8 @@
             }
         }
 
+        public Matrix4 localSpaceMatrix { get => m_Matrix; set => m_Matrix = value; }
+
         IEnumerator<Transform> IEnumerable<Transform>.GetEnumerator()
         {
             return m_Children.GetEnumerator();

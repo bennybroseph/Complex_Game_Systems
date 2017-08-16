@@ -14,8 +14,6 @@ using UI;
 
 using Utility;
 
-using GameObject = BroEngine.Component.GameObject;
-
 public class MyGameWindow : GameWindow
 {
     private readonly List<Model<Vertex>> m_Models = new List<Model<Vertex>>();
@@ -24,6 +22,7 @@ public class MyGameWindow : GameWindow
     private Model<Vertex> m_Earth;
     private Model<Vertex> m_Moon;
 
+    private GameObject m_MainCamera = new GameObject("Main Camera");
     private GameObject m_TestObject = new GameObject("Test Object");
 
     private Canvas m_Canvas;
@@ -88,6 +87,8 @@ public class MyGameWindow : GameWindow
 
         Audio.Init();
         MusicPlayer.Init("Content\\Music\\Songs");
+
+        //ImGuiNET.ImGuiNative.ini
 
         m_Canvas = new Canvas(this);
 
@@ -204,6 +205,10 @@ public class MyGameWindow : GameWindow
         m_Camera.SetLookAt(new Vector3(0f, 5f, 10f), Vector3.Zero, new Vector3(0f, 1f, 0f));
         m_Camera.SetPerspective(MathHelper.PiOver4, Width / (float)Height, 0.1f, 75f);
 
+        var camera = m_MainCamera.AddComponent<BroEngine.Camera>();
+        camera.SetLookAt(new Vector3(0f, 5f, 10f), Vector3.Zero, new Vector3(0f, 1f, 0f));
+        m_MainCamera.tag = "MainCamera";
+
         m_TestObject.AddComponent<MeshRenderer>();
 
         RenderFrame += OnRenderFrameEvent;
@@ -247,16 +252,19 @@ public class MyGameWindow : GameWindow
         {
             model.Bind();
             {
-                //model.Draw();
+                model.Draw();
             }
             model.UnBind();
         }
 
-        //MusicPlayer.Draw();
+        MusicPlayer.Draw();
 
-        //m_Canvas.Draw();
+        m_Canvas.Draw();
 
         m_TestObject.GetComponent<MeshRenderer>().DrawGizmos();
+        Gizmos.DrawCube(Vector3.Zero, Vector3.One);
+
+        m_MainCamera.DrawInspector();
 
         SwapBuffers();
     }

@@ -4,9 +4,7 @@ namespace BroEngine
 {
     public abstract partial class Component : Object
     {
-        private GameObject m_GameObject;
-
-        public GameObject gameObject => m_GameObject;
+        public GameObject gameObject { get; set; }
 
         public string tag => gameObject.tag;
         public Transform transform => gameObject.transform;

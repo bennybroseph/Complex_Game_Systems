@@ -1,6 +1,6 @@
 ﻿namespace Geometry
 {
-    using BroEngine;
+    //using BroEngine;
 
     using OpenTK;
     using OpenTK.Graphics;
@@ -8,7 +8,7 @@
 
     public class Model<TVertex> where TVertex : struct
     {
-        public Transform transform { get; set; } = new Transform();
+        public BroEngine.Transform transform { get; set; } = new BroEngine.Transform();
 
         public Mesh<TVertex> mesh { get; set; }
 

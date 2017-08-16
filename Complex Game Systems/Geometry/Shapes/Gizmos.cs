@@ -101,5 +101,27 @@
             }
             GL.PopMatrix();
         }
+
+        public static void DrawCube(Vector3 center, Vector3 size)
+        {
+            GL.UseProgram(0);
+
+            GL.PushMatrix();
+            {
+                var matrix = BroEngine.Camera.main.transform.worldSpaceMatrix;
+                GL.LoadMatrix(ref matrix);
+
+                var min = center - size / 2f;
+                var max = center + size / 2f;
+                GL.Begin(PrimitiveType.Polygon);
+                {
+                    GL.Vertex3(min);
+                    GL.Vertex3(min + new Vector3(size.X / 2f, 0f, 0f));
+                    GL.Vertex3(max);
+                }
+                GL.End();
+            }
+            GL.PopMatrix();
+        }
     }
 }
