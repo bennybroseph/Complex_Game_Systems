@@ -1,6 +1,10 @@
 ﻿namespace BroEngineEditor
 {
+    using System;
+    using System.Collections.Generic;
+    using System.Linq;
     using System.Numerics;
+    using System.Reflection;
 
     using BroEngine;
 
@@ -9,6 +13,36 @@
     [CustomEditor(typeof(GameObject))]
     public class GameObjectEditor : Editor
     {
+        private static Dictionary<Type, Editor> s_ComponentEditors =
+            new Dictionary<Type, Editor>();
+        private static Editor s_DefaultEditor = new Editor();
+
+        private static bool s_IsInitialized;
+
+        public GameObjectEditor()
+        {
+            if (s_IsInitialized)
+                return;
+
+            foreach (var type in Assembly.GetExecutingAssembly().GetTypes())
+            {
+                var customEditorObjects = type.GetCustomAttributes(typeof(CustomEditorAttribute), true);
+                if (customEditorObjects.Length <= 0)
+                    continue;
+
+                var customEditor = customEditorObjects.FirstOrDefault() as CustomEditorAttribute;
+                if (customEditor == null || !typeof(Component).IsAssignableFrom(customEditor.type))
+                    continue;
+
+                if (!s_ComponentEditors.ContainsKey(customEditor.type))
+                    s_ComponentEditors.Add(
+                        customEditor.type,
+                        Activator.CreateInstance(type, null) as Editor);
+            }
+
+            s_IsInitialized = true;
+        }
+
         public override void OnInspectorGUI()
         {
             var gameObject = target as GameObject;
@@ -30,7 +64,19 @@
             {
                 ImGui.PushID(component.id);
                 {
-                    ImGui.CollapsingHeader(component.name, component.id.ToString(), true, true);
+                    if (ImGui.CollapsingHeader(component.name, component.id.ToString(), true, true))
+                    {
+                        if (s_ComponentEditors.TryGetValue(component.GetType(), out Editor editor))
+                        {
+                            editor.target = component;
+                            editor.OnInspectorGUI();
+                        }
+                        else
+                        {
+                            s_DefaultEditor.target = component;
+                            s_DefaultEditor.OnInspectorGUI();
+                        }
+                    }
                 }
                 ImGui.PopID();
             }

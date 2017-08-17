@@ -97,9 +97,11 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
-    <Compile Include="BroEngineEditor\CustomEditor.cs" />
+    <Compile Include="BroEngineEditor\CameraEditor.cs" />
+    <Compile Include="BroEngineEditor\CustomEditorAttribute.cs" />
     <Compile Include="BroEngineEditor\Editor.cs" />
     <Compile Include="BroEngineEditor\GameObjectEditor.cs" />
+    <Compile Include="BroEngineEditor\TransformEditor.cs" />
     <Compile Include="BroEngine\Behaviour.cs" />
     <Compile Include="BroEngine\Bounds.cs" />
     <Compile Include="BroEngine\Camera.cs" />

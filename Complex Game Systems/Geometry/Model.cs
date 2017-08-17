@@ -2,14 +2,14 @@
 {
     //using BroEngine;
 
+    using BroEngine;
+
     using OpenTK;
     using OpenTK.Graphics;
     using OpenTK.Graphics.OpenGL;
 
-    public class Model<TVertex> where TVertex : struct
+    public class Model<TVertex> : Component where TVertex : struct
     {
-        public BroEngine.Transform transform { get; set; } = new BroEngine.Transform();
-
         public Mesh<TVertex> mesh { get; set; }
 
         public ShaderProgram shader { get; set; }

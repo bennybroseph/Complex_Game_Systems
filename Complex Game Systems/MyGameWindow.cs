@@ -23,9 +23,9 @@ public class MyGameWindow : GameWindow
 {
     private readonly List<Model<Vertex>> m_Models = new List<Model<Vertex>>();
 
-    private Model<Vertex> m_Sun;
-    private Model<Vertex> m_Earth;
-    private Model<Vertex> m_Moon;
+    private GameObject m_Sun;
+    private GameObject m_Earth;
+    private GameObject m_Moon;
 
     private GameObject m_MainCamera = new GameObject("Main Camera");
     private GameObject m_TestObject = new GameObject("Test Object");
@@ -165,49 +165,56 @@ public class MyGameWindow : GameWindow
         GL.Uniform3(location, 1f, 0.5f, 0f);
 
         var mesh = Plane.GetMesh();
-        m_Sun = new Model<Vertex>
+
+        var sunModel = new Model<Vertex>
         {
             mesh = mesh,
             shader = ShaderProgram.texture,
             diffuseTexture = m_Texture
         };
-        m_Sun.Bind();
-        m_Sun.BufferData();
-        m_Sun.UnBind();
+        m_Sun = new GameObject("Sun", sunModel);
 
-        m_Models.Add(m_Sun);
+        sunModel.Bind();
+        sunModel.BufferData();
+        sunModel.UnBind();
 
-        m_Earth = new Model<Vertex>
+        m_Models.Add(sunModel);
+
+        var earthModel = new Model<Vertex>
         {
             mesh = mesh,
             shader = ShaderProgram.texture,
             diffuseTexture = m_Texture
         };
-        m_Earth.Bind();
-        m_Earth.BufferData();
-        m_Earth.UnBind();
+        m_Earth = new GameObject("Earth", earthModel);
+
+        earthModel.Bind();
+        earthModel.BufferData();
+        earthModel.UnBind();
 
         m_Earth.transform.SetParent(m_Sun.transform);
 
         m_Earth.transform.Translate(new Vector3(1.5f, 0f, 0f));
 
-        m_Models.Add(m_Earth);
+        m_Models.Add(earthModel);
 
-        m_Moon = new Model<Vertex>
+        var moonModel = new Model<Vertex>
         {
             mesh = mesh,
             shader = ShaderProgram.texture,
             diffuseTexture = m_Texture
         };
-        m_Moon.Bind();
-        m_Moon.BufferData();
-        m_Moon.UnBind();
+        m_Moon = new GameObject("Moon", moonModel);
+
+        moonModel.Bind();
+        moonModel.BufferData();
+        moonModel.UnBind();
 
         m_Moon.transform.Translate(new Vector3(1.5f, 0f, 0f));
         m_Moon.transform.Scale(new Vector3(0.5f, 0.5f, 0.5f));
         m_Moon.transform.SetParent(m_Earth.transform);
 
-        m_Models.Add(m_Moon);
+        m_Models.Add(moonModel);
 
         m_Camera = new StaticCamera();
         m_Camera.SetLookAt(new Vector3(0f, 5f, 10f), Vector3.Zero, new Vector3(0f, 1f, 0f));
@@ -218,7 +225,7 @@ public class MyGameWindow : GameWindow
         m_MainCamera.tag = "MainCamera";
 
         m_TestObject.AddComponent<MeshRenderer>();
-        Inspector.selectedObject = m_MainCamera;
+        Inspector.selectedObject = m_Moon;
 
         RenderFrame += OnRenderFrameEvent;
     }

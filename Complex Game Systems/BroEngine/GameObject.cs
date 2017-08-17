@@ -22,13 +22,18 @@
         public GameObject(string name = "New GameObject") : base(name)
         {
             transform = AddComponent<Transform>();
+            transform.gameObject = this;
 
             s_GameObjects.Add(this);
         }
 
         public GameObject(string name, params Component[] components) : this(name)
         {
-            m_Components.AddRange(components);
+            foreach (var component in components)
+            {
+                component.gameObject = this;
+                m_Components.Add(component);
+            }
         }
 
         public static GameObject Find(string otherName)
@@ -68,6 +73,6 @@
             return m_Components.Where(component => component is T).Cast<T>();
         }
 
-        
+
     }
 }

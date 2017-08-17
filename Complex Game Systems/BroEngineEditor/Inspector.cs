@@ -16,7 +16,7 @@
         private static Dictionary<Type, Editor> s_Editors =
             new Dictionary<Type, Editor>();
 
-        private static Editor defaultEditor = new Editor();
+        private static Editor s_DefaultEditor = new Editor();
 
         public static Object selectedObject { get; set; }
 
@@ -38,7 +38,7 @@
 
         public static void DrawGui()
         {
-            ImGui.BeginWindow("Inspector", WindowFlags.NoMove);
+            if (ImGui.BeginWindow("Inspector", WindowFlags.NoMove))
             {
                 ImGui.SetWindowSize(
                     new Vector2(ImGui.GetWindowSize().X, MyGameWindow.main.Height * 0.66f),
@@ -63,8 +63,8 @@
                     }
                     else
                     {
-                        defaultEditor.target = selectedObject;
-                        defaultEditor.OnInspectorGUI();
+                        s_DefaultEditor.target = selectedObject;
+                        s_DefaultEditor.OnInspectorGUI();
                     }
                 }
                 ImGuiNative.igEndGroup();
