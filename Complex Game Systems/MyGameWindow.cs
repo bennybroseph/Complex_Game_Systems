@@ -2,8 +2,13 @@
 using System.Collections.Generic;
 using System.IO;
 using BroEngine;
+
+using BroEngineEditor;
+
 using Geometry;
 using Geometry.Shapes;
+
+using ImGuiUtility;
 
 using OpenTK;
 using OpenTK.Graphics;
@@ -88,7 +93,10 @@ public class MyGameWindow : GameWindow
         Audio.Init();
         MusicPlayer.Init("Content\\Music\\Songs");
 
-        //ImGuiNET.ImGuiNative.ini
+        ImGuiOpenTK.Init(this);
+        ImGuiOpenTK.drawEvent += Inspector.DrawGui;
+
+        Inspector.Init();
 
         m_Canvas = new Canvas(this);
 
@@ -210,6 +218,7 @@ public class MyGameWindow : GameWindow
         m_MainCamera.tag = "MainCamera";
 
         m_TestObject.AddComponent<MeshRenderer>();
+        Inspector.selectedObject = m_MainCamera;
 
         RenderFrame += OnRenderFrameEvent;
     }
@@ -264,7 +273,7 @@ public class MyGameWindow : GameWindow
         m_TestObject.GetComponent<MeshRenderer>().DrawGizmos();
         Gizmos.DrawCube(Vector3.Zero, Vector3.One);
 
-        m_MainCamera.DrawInspector();
+        ImGuiOpenTK.RenderFrame();
 
         SwapBuffers();
     }

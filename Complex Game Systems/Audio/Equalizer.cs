@@ -124,7 +124,7 @@ public class Equalizer
         beatAverage /= m_BeatMaxIndex;
         oldBeatAverage /= m_BeatMaxIndex;
 
-        Console.Write(beatAverage + " ");
+        //Console.Write(beatAverage + " ");
         if (beatAverage >= m_BeatThresholdVolume && beatAverage - oldBeatAverage >= 0.05f && m_LastBeat == 0)
         {
             m_BeatVolume = beatAverage;

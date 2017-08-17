@@ -9,7 +9,7 @@ namespace BroEngine
         public string tag => gameObject.tag;
         public Transform transform => gameObject.transform;
 
-        public Component(string name = "New Component") : base(name) { }
+        public override string name => GetType().ToString();
 
         public bool CompareTag(string otherTag) => gameObject.CompareTag(otherTag);
 

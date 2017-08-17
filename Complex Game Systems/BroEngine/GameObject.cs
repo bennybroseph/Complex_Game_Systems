@@ -61,21 +61,13 @@
 
         public T GetComponent<T>() where T : Component
         {
-            return m_Components.FirstOrDefault(component => component.GetType() == typeof(T)) as T;
+            return m_Components.FirstOrDefault(component => component is T) as T;
         }
         public IEnumerable<T> GetComponents<T>() where T : Component
         {
-            return m_Components.Where(component => component.GetType() == typeof(T)).Cast<T>();
+            return m_Components.Where(component => component is T).Cast<T>();
         }
 
-        public void DrawInspector()
-        {
-            ImGui.PushID(m_ID);
-            ImGuiNative.igBeginGroup();
-            {
-                ImGui.InputText("Name", name.Cast<byte>().ToArray(), 255, InputTextFlags.EnterReturnsTrue, null);
-            }
-            ImGuiNative.igEndGroup();
-        }
+        
     }
 }

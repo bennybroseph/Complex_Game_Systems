@@ -20,7 +20,7 @@
 
         public Matrix4 projectionMatrix { get; protected set; }
 
-        public Camera() : base("New Camera")
+        public Camera() : base()
         {
             //SetLookAt(new Vector3(0f, 5f, 10f), Vector3.Zero, new Vector3(0f, 1f, 0f));
             SetPerspective(MathHelper.PiOver4, 6f / 10f, 0.1f, 75f);

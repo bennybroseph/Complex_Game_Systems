@@ -1,7 +1,12 @@
 ﻿namespace BroEngine
 {
+    using System;
     using System.Collections.Generic;
     using System.Linq;
+    using System.Runtime.InteropServices;
+    using System.Text;
+
+    using ImGuiNET;
 
     public class Object
     {
@@ -10,7 +15,8 @@
 
         protected int m_ID;
 
-        public string name { get; set; }
+        public virtual string name { get; set; }
+        public int id => m_ID;
 
         public Object(string name = "New Object")
         {
@@ -42,11 +48,11 @@
 
         public static T FindObjectOfType<T>() where T : Object
         {
-            return s_Objects.FirstOrDefault(o => o.GetType() == typeof(T)) as T;
+            return s_Objects.FirstOrDefault(o => o is T) as T;
         }
         public static IEnumerable<T> FindObjectsOfType<T>() where T : Object
         {
-            return s_Objects.Where(o => o.GetType() == typeof(T)).Cast<T>();
+            return s_Objects.Where(o => o is T).Cast<T>();
         }
 
         public static void Destroy(Object o)
