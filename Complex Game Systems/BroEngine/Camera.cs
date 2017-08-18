@@ -1,19 +1,16 @@
 ﻿namespace BroEngine
 {
-    using System.Collections.Generic;
     using System.Linq;
 
     using OpenTK;
 
     public class Camera : Behaviour
     {
-        private static List<Camera> s_Cameras = new List<Camera>();
 
-        public static List<Camera> allCameras => s_Cameras;
-        public static int allCamerasCount => s_Cameras.Count;
+        public static Camera[] allCameras => FindObjectsOfType<Camera>().ToArray();
+        public static int allCamerasCount => allCameras.Length;
 
-        public static Camera main =>
-            s_Cameras.FirstOrDefault(camera => camera.CompareTag("MainCamera"))?.GetComponent<Camera>();
+        public static Camera main => GameObject.FindGameObjectWithTag("MainCamera")?.GetComponent<Camera>();
 
         private float m_FieldOfView;
         private float m_Near;
@@ -43,10 +40,8 @@
 
         public Camera()
         {
-            s_Cameras.Add(this);
-
             //SetLookAt(new Vector3(0f, 5f, 10f), Vector3.Zero, new Vector3(0f, 1f, 0f));
-            SetPerspective(MathHelper.PiOver4, 10f / 6f, 0.1f, 75f);
+            SetPerspective(MathHelper.PiOver4, 16f / 9f, 0.1f, 75f);
         }
 
         public void SetPerspective(float fieldOfView, float aspectRatio, float near, float far)

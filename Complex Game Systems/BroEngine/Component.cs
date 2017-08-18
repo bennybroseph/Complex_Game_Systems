@@ -2,14 +2,14 @@
 
 namespace BroEngine
 {
-    public abstract partial class Component : Object
+    public abstract class Component : Object
     {
         public GameObject gameObject { get; set; }
 
         public string tag => gameObject.tag;
         public Transform transform => gameObject.transform;
 
-        public override string name => GetType().ToString();
+        public override string name => GetType().Name;
 
         public bool CompareTag(string otherTag) => gameObject.CompareTag(otherTag);
 

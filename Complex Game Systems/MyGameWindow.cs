@@ -21,7 +21,7 @@ using Utility;
 
 public class MyGameWindow : GameWindow
 {
-    private readonly List<Model<Vertex>> m_Models = new List<Model<Vertex>>();
+    private readonly List<MeshRenderer<Vertex>> m_MeshRenderers = new List<MeshRenderer<Vertex>>();
 
     private GameObject m_Sun;
     private GameObject m_Earth;
@@ -166,55 +166,58 @@ public class MyGameWindow : GameWindow
 
         var mesh = Plane.GetMesh();
 
-        var sunModel = new Model<Vertex>
-        {
-            mesh = mesh,
-            shader = ShaderProgram.texture,
-            diffuseTexture = m_Texture
-        };
-        m_Sun = new GameObject("Sun", sunModel);
+        m_Sun = new GameObject("Sun");
 
-        sunModel.Bind();
-        sunModel.BufferData();
-        sunModel.UnBind();
+        var sunMeshFilter = m_Sun.AddComponent<MeshFilter<Vertex>>();
+        sunMeshFilter.mesh = mesh;
 
-        m_Models.Add(sunModel);
+        var sunMeshRenderer = m_Sun.AddComponent<MeshRenderer<Vertex>>();
+        sunMeshRenderer.shader = ShaderProgram.texture;
+        sunMeshRenderer.diffuseTexture = m_Texture;
 
-        var earthModel = new Model<Vertex>
-        {
-            mesh = mesh,
-            shader = ShaderProgram.texture,
-            diffuseTexture = m_Texture
-        };
-        m_Earth = new GameObject("Earth", earthModel);
+        sunMeshRenderer.Bind();
+        sunMeshRenderer.BufferData();
+        sunMeshRenderer.UnBind();
 
-        earthModel.Bind();
-        earthModel.BufferData();
-        earthModel.UnBind();
+        m_MeshRenderers.Add(sunMeshRenderer);
+
+        m_Earth = new GameObject("Earth");
+
+        var earthMeshFilter = m_Earth.AddComponent<MeshFilter<Vertex>>();
+        earthMeshFilter.mesh = mesh;
+
+        var earthMeshRenderer = m_Earth.AddComponent<MeshRenderer<Vertex>>();
+        earthMeshRenderer.shader = ShaderProgram.texture;
+        earthMeshRenderer.diffuseTexture = m_Texture;
+
+        earthMeshRenderer.Bind();
+        earthMeshRenderer.BufferData();
+        earthMeshRenderer.UnBind();
 
         m_Earth.transform.SetParent(m_Sun.transform);
 
         m_Earth.transform.Translate(new Vector3(1.5f, 0f, 0f));
 
-        m_Models.Add(earthModel);
+        m_MeshRenderers.Add(earthMeshRenderer);
 
-        var moonModel = new Model<Vertex>
-        {
-            mesh = mesh,
-            shader = ShaderProgram.texture,
-            diffuseTexture = m_Texture
-        };
-        m_Moon = new GameObject("Moon", moonModel);
+        m_Moon = new GameObject("Moon");
 
-        moonModel.Bind();
-        moonModel.BufferData();
-        moonModel.UnBind();
+        var moonMeshFilter = m_Moon.AddComponent<MeshFilter<Vertex>>();
+        moonMeshFilter.mesh = mesh;
+
+        var moonMeshRenderer = m_Moon.AddComponent<MeshRenderer<Vertex>>();
+        moonMeshRenderer.shader = ShaderProgram.texture;
+        moonMeshRenderer.diffuseTexture = m_Texture;
+
+        moonMeshRenderer.Bind();
+        moonMeshRenderer.BufferData();
+        moonMeshRenderer.UnBind();
 
         m_Moon.transform.Translate(new Vector3(1.5f, 0f, 0f));
         m_Moon.transform.Scale(new Vector3(0.5f, 0.5f, 0.5f));
         m_Moon.transform.SetParent(m_Earth.transform);
 
-        m_Models.Add(moonModel);
+        m_MeshRenderers.Add(moonMeshRenderer);
 
         m_Camera = new StaticCamera();
         m_Camera.SetLookAt(new Vector3(0f, 5f, 10f), Vector3.Zero, new Vector3(0f, 1f, 0f));
@@ -224,7 +227,7 @@ public class MyGameWindow : GameWindow
         camera.SetLookAt(new Vector3(0f, 5f, 10f), Vector3.Zero, new Vector3(0f, 1f, 0f));
         m_MainCamera.tag = "MainCamera";
 
-        m_TestObject.AddComponent<MeshRenderer>();
+        m_TestObject.AddComponent<MeshRenderer<Vertex>>();
         Inspector.selectedObject = m_Moon;
 
         RenderFrame += OnRenderFrameEvent;
@@ -264,11 +267,11 @@ public class MyGameWindow : GameWindow
     {
         GL.Clear(ClearBufferMask.ColorBufferBit | ClearBufferMask.DepthBufferBit);
 
-        foreach (var model in m_Models)
+        foreach (var model in m_MeshRenderers)
         {
             model.Bind();
             {
-                model.Draw();
+                model.Render();
             }
             model.UnBind();
         }
@@ -277,7 +280,6 @@ public class MyGameWindow : GameWindow
 
         m_Canvas.Draw();
 
-        m_TestObject.GetComponent<MeshRenderer>().DrawGizmos();
         Gizmos.DrawCube(Vector3.Zero, Vector3.One);
 
         ImGuiOpenTK.RenderFrame();

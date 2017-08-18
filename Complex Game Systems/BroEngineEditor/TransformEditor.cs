@@ -13,7 +13,7 @@
     {
         public override void OnInspectorGUI()
         {
-            var t = typeof(Model<>);
+            var t = typeof(MeshRenderer<>);
             var transform = target as Transform;
             if (transform == null)
                 return;

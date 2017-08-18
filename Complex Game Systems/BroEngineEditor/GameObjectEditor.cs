@@ -37,7 +37,7 @@
                 if (!s_ComponentEditors.ContainsKey(customEditor.type))
                     s_ComponentEditors.Add(
                         customEditor.type,
-                        Activator.CreateInstance(type, null) as Editor);
+                        Activator.CreateInstance(type) as Editor);
             }
 
             s_IsInitialized = true;
@@ -49,7 +49,7 @@
             if (gameObject == null)
                 return;
 
-            ImGui.BeginChildFrame(0, new Vector2(ImGui.GetWindowSize().X, 25f), WindowFlags.NoScrollbar);
+            ImGui.BeginChildFrame(0, new Vector2(ImGui.GetWindowWidth(), 25f), WindowFlags.NoScrollbar);
             {
                 ImGui.Columns(2, "Test", false);
                 var t = 1;
@@ -60,16 +60,53 @@
             }
             ImGui.EndChildFrame();
 
-            foreach (var component in gameObject.GetComponents<Component>())
+            var components = gameObject.GetComponents<Component>().ToList();
+            foreach (var component in components)
             {
                 ImGui.PushID(component.id);
                 {
                     if (ImGui.CollapsingHeader(component.name, component.id.ToString(), true, true))
                     {
-                        if (s_ComponentEditors.TryGetValue(component.GetType(), out Editor editor))
+                        if (ImGui.BeginPopupContextItem("Component Menu", 1))
+                        {
+                            if (ImGui.Selectable("Reset"))
+                            {
+                                // Reset Component
+                            }
+                            if (ImGui.Selectable("Remove Component"))
+                            {
+                                BroEngine.Object.Destroy(component);
+                            }
+                            ImGui.EndPopup();
+                        }
+
+                        var componentType = component.GetType();
+                        if (s_ComponentEditors.TryGetValue(componentType, out Editor editor))
                         {
                             editor.target = component;
                             editor.OnInspectorGUI();
+                        }
+                        else if (componentType.IsGenericType)
+                        {
+                            var foundEditor = false;
+                            foreach (var keyValuePair in s_ComponentEditors)
+                            {
+                                var underlyingType = componentType.GetGenericTypeDefinition();
+                                if (underlyingType != keyValuePair.Key)
+                                    continue;
+
+                                keyValuePair.Value.target = component;
+                                keyValuePair.Value.OnInspectorGUI();
+
+                                foundEditor = true;
+                                break;
+                            }
+
+                            if (!foundEditor)
+                            {
+                                s_DefaultEditor.target = component;
+                                s_DefaultEditor.OnInspectorGUI();
+                            }
                         }
                         else
                         {
@@ -79,6 +116,18 @@
                     }
                 }
                 ImGui.PopID();
+            }
+
+            ImGui.LabelText("", "");
+
+            ImGui.Columns(3, "Add Component Column", false);
+            {
+                ImGui.NextColumn();
+                if (ImGui.Button(
+                    "Add Component", new Vector2(ImGui.GetColumnWidth(ImGui.GetColumnIndex()) - 15f, 0)))
+                {
+                    // Add Component
+                }
             }
         }
     }

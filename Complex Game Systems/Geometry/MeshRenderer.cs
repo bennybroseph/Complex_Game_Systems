@@ -1,17 +1,13 @@
 ﻿namespace Geometry
 {
-    //using BroEngine;
-
     using BroEngine;
 
-    using OpenTK;
     using OpenTK.Graphics;
     using OpenTK.Graphics.OpenGL;
 
-    public class Model<TVertex> : Component where TVertex : struct
+    [DisallowMultipleComponent]
+    public class MeshRenderer<TVertex> : Behaviour where TVertex : struct
     {
-        public Mesh<TVertex> mesh { get; set; }
-
         public ShaderProgram shader { get; set; }
 
         public Texture normalTexture { get; set; }
@@ -49,13 +45,13 @@
                 GL.Uniform1(location, 2);
             }
 
-            mesh.Bind();
+            GetComponent<MeshFilter<TVertex>>()?.mesh.Bind();
         }
         public void UnBind()
         {
             Texture.UnBind();
 
-            mesh.UnBind();
+            GetComponent<MeshFilter<TVertex>>()?.mesh.UnBind();
 
             GL.UseProgram(0);
         }
@@ -71,10 +67,10 @@
             if (specularTexture != null)
                 specularTexture.BufferData();
 
-            mesh.BufferData(shader);
+            GetComponent<MeshFilter<TVertex>>()?.mesh.BufferData(shader);
         }
 
-        public void Draw()
+        public void Render()
         {
             // get uniform location
             var location = shader.GetUniformLocation("projectionMatrix");
@@ -83,7 +79,7 @@
             // set uniform value
             GL.UniformMatrix4(location, false, ref tempMatrix);
 
-            mesh.Draw();
+            GetComponent<MeshFilter<TVertex>>()?.mesh.Draw();
         }
     }
 }

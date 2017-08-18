@@ -1,12 +1,7 @@
 ﻿namespace BroEngine
 {
-    using System;
     using System.Collections.Generic;
     using System.Linq;
-    using System.Runtime.InteropServices;
-    using System.Text;
-
-    using ImGuiNET;
 
     public class Object
     {
@@ -60,14 +55,14 @@
             if (o.GetType() == typeof(Transform))
                 return;
 
+            if (o is Component component)
+                component.gameObject.RemoveComponent(component);
+
             s_IDs[o.m_ID] = true;
             s_Objects.Remove(o);
         }
 
-        public override string ToString()
-        {
-            return name;
-        }
+        public override string ToString() { return name; }
     }
 }
 

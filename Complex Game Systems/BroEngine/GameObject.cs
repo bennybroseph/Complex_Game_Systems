@@ -3,13 +3,12 @@
     using System;
     using System.Collections.Generic;
     using System.Linq;
-
-    using ImGuiNET;
+    using System.Reflection;
+    using System.Windows.Forms;
+    using FMOD;
 
     public class GameObject : Object
     {
-        private static List<GameObject> s_GameObjects = new List<GameObject>();
-
         private List<Component> m_Components = new List<Component>();
 
         public Transform transform { get; }
@@ -23,40 +22,41 @@
         {
             transform = AddComponent<Transform>();
             transform.gameObject = this;
-
-            s_GameObjects.Add(this);
         }
 
-        public GameObject(string name, params Component[] components) : this(name)
+        public GameObject(string name, params Type[] types) : this(name)
         {
-            foreach (var component in components)
-            {
-                component.gameObject = this;
-                m_Components.Add(component);
-            }
+            foreach (var type in types)
+                AddComponent(type);
         }
 
         public static GameObject Find(string otherName)
         {
-            return s_GameObjects.FirstOrDefault(gameObject => gameObject.name == otherName);
+            return FindObjectsOfType<GameObject>().FirstOrDefault(gameObject => gameObject.name == otherName);
         }
 
         public static GameObject FindGameObjectWithTag(string otherTag)
         {
-            return s_GameObjects.FirstOrDefault(gameObject => gameObject.tag == otherTag);
+            return FindObjectsOfType<GameObject>().FirstOrDefault(gameObject => gameObject.tag == otherTag);
         }
 
         public static IEnumerable<GameObject> FindGameObjectsWithTag(string otherTag)
         {
-            return s_GameObjects.Where(gameObject => gameObject.tag == otherTag);
+            return FindObjectsOfType<GameObject>().Where(gameObject => gameObject.tag == otherTag);
         }
 
         public T AddComponent<T>() where T : Component, new()
         {
-            var newComponent = new T { gameObject = this };
-            m_Components.Add(newComponent);
+            var newComponent = new T();
+            return AddComponent(newComponent);
+        }
+        public Component AddComponent(Type type)
+        {
+            if (!typeof(Component).IsAssignableFrom(type))
+                return null;
 
-            return newComponent;
+            var newComponent = Activator.CreateInstance(type) as Component;
+            return AddComponent(newComponent);
         }
 
         public bool CompareTag(string otherTag)
@@ -68,11 +68,60 @@
         {
             return m_Components.FirstOrDefault(component => component is T) as T;
         }
+        public Component GetComponent(Type type)
+        {
+            return m_Components.FirstOrDefault(type.IsInstanceOfType);
+        }
+
         public IEnumerable<T> GetComponents<T>() where T : Component
         {
             return m_Components.Where(component => component is T).Cast<T>();
         }
+        public IEnumerable<Component> GetComponents(Type type)
+        {
+            return m_Components.Where(type.IsInstanceOfType);
+        }
 
+        internal void RemoveComponent(Component component)
+        {
+            component.gameObject = null;
+            m_Components.Remove(component);
+        }
 
+        private T AddComponent<T>(T component) where T : Component
+        {
+            var requireComponent = typeof(T).GetCustomAttribute<RequireComponentAttribute>();
+            if (requireComponent != null)
+            {
+                foreach (var type in requireComponent.types)
+                {
+                    if (!typeof(Component).IsAssignableFrom(type))
+                        continue;
+
+                    // If there is already a component on the object
+                    if (GetComponent(type) != null)
+                        continue;
+
+                    var newComponent = Activator.CreateInstance(type) as Component;
+                    if (newComponent == null)
+                        continue;
+
+                    AddComponent(newComponent);
+                }
+            }
+
+            var disallowMultiple = typeof(T).GetCustomAttribute<DisallowMultipleComponentAttribute>();
+            if (disallowMultiple != null && GetComponent<T>() != null)
+            {
+                Console.WriteLine(
+                    "The component of type " + typeof(T).Name + " does not allow multiple instances");
+                return null;
+            }
+
+            component.gameObject = this;
+            m_Components.Add(component);
+
+            return component;
+        }
     }
 }

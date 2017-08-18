@@ -10,9 +10,7 @@ namespace BroEngineEditor
     public class CustomEditorAttribute : Attribute
     {
         public Type type { get; }
-        public CustomEditorAttribute(Type type)
-        {
-            this.type = type;
-        }
+
+        public CustomEditorAttribute(Type type) { this.type = type; }
     }
 }

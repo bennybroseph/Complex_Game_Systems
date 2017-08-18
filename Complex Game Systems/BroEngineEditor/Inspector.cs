@@ -32,7 +32,7 @@
                 if (customEditor != null && !s_Editors.ContainsKey(customEditor.type))
                     s_Editors.Add(
                         customEditor.type,
-                        Activator.CreateInstance(type, null) as Editor);
+                        Activator.CreateInstance(type) as Editor);
             }
         }
 
