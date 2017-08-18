@@ -78,8 +78,8 @@
                     onRemoved(selectedIndex);
                     strings.RemoveAt(selectedIndex);
                 }
+                ImGui.TreePop();
             }
-            ImGui.TreePop();
         }
 
         private static void OnRemovedTag(int index)

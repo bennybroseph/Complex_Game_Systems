@@ -6,7 +6,6 @@
 
     public class Camera : Behaviour
     {
-
         public static Camera[] allCameras => FindObjectsOfType<Camera>().ToArray();
         public static int allCamerasCount => allCameras.Length;
 
