@@ -95,6 +95,8 @@ public class MyGameWindow : GameWindow
 
         ImGuiOpenTK.Init(this);
 
+        ImGuiOpenTK.drawEvent += DockWindowTest.DrawGui;
+
         MainMenu.Init();
         Inspector.Init();
 

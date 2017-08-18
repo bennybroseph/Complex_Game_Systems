@@ -1,6 +1,7 @@
 ﻿namespace BroEngine
 {
     using System.Collections.Generic;
+    using System.Linq;
 
     using BroEngineEditor;
 
@@ -44,9 +45,33 @@
                 s_Instance = new TagLayerManager();
         }
 
-        internal static int GetTagIndex(string tag) { return s_Instance.tags.IndexOf(tag); }
-        internal static int GetLayerIndex(string layer) { return s_Instance.layers.IndexOf(layer); }
+        internal static int GetTagIndex(string tag) { return instanceTags.IndexOf(tag); }
+        internal static int GetLayerIndex(string layer) { return instanceLayers.IndexOf(layer); }
 
         internal static void Select() { Inspector.selectedObject = s_Instance; }
+
+        internal static void RemoveTag(int index)
+        {
+            foreach (var gameObject in GameObject.FindGameObjectsWithTag(instanceTags[index]))
+                gameObject.tagIndex = 0;
+
+            var tags = instanceTags.ToList();
+            tags.RemoveAt(index);
+            foreach (var gameObject in FindObjectsOfType<GameObject>())
+                gameObject.tagIndex = tags.IndexOf(gameObject.tag);
+        }
+        internal static void RemoveLayer(int index)
+        {
+            foreach (var gameObject in FindObjectsOfType<GameObject>())
+            {
+                if (gameObject.layerIndex == index)
+                    gameObject.layerIndex = 0;
+            }
+
+            var layers = instanceLayers.ToList();
+            layers.RemoveAt(index);
+            foreach (var gameObject in FindObjectsOfType<GameObject>())
+                gameObject.layerIndex = layers.IndexOf(gameObject.layer);
+        }
     }
 }

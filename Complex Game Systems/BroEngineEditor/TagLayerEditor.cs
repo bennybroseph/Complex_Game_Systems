@@ -2,6 +2,7 @@
 {
     using System;
     using System.Collections.Generic;
+    using System.Linq;
     using System.Numerics;
     using System.Runtime.InteropServices;
     using System.Text;
@@ -28,8 +29,8 @@
             if (tagLayerManager == null)
                 return;
 
-            DrawList("Tag", tagLayerManager.tags, ref m_SelectedTag, OnRemovedTag);
-            DrawList("Layer", tagLayerManager.layers, ref m_SelectedLayer, OnRemovedLayer);
+            DrawList("Tag", tagLayerManager.tags, ref m_SelectedTag, TagLayerManager.RemoveTag);
+            DrawList("Layer", tagLayerManager.layers, ref m_SelectedLayer, TagLayerManager.RemoveLayer);
         }
 
         private void DrawList(string name, IList<string> strings, ref int selectedIndex, Removed onRemoved)
@@ -79,21 +80,6 @@
                     strings.RemoveAt(selectedIndex);
                 }
                 ImGui.TreePop();
-            }
-        }
-
-        private static void OnRemovedTag(int index)
-        {
-            foreach (var gameObject in GameObject.FindGameObjectsWithTag(TagLayerManager.instanceTags[index]))
-                gameObject.tagIndex = 0;
-        }
-
-        private static void OnRemovedLayer(int index)
-        {
-            foreach (var gameObject in Object.FindObjectsOfType<GameObject>())
-            {
-                if (gameObject.layerIndex == index)
-                    gameObject.layerIndex = 0;
             }
         }
     }
