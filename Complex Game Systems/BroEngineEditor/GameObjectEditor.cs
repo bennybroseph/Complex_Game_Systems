@@ -51,12 +51,26 @@
 
             ImGui.BeginChildFrame(0, new Vector2(ImGui.GetWindowWidth(), 25f), WindowFlags.NoScrollbar);
             {
-                ImGui.Columns(2, "Test", false);
-                var t = 1;
-                ImGui.Combo("Tag Test", ref t, new[] { "Tag 1", "Tag 2" });
+                ImGui.Columns(2, "Tags and Layers Columns", false);
+
+                var tagIndex = gameObject.tagIndex;
+                if (ImGui.Combo("Tag", ref tagIndex, TagLayerManager.instanceTags.ToArray()))
+                    gameObject.tagIndex = tagIndex;
+
+                ImGui.SameLine();
+                if (ImGui.Button(" + "))
+                    TagLayerManager.Select();
+
                 ImGui.NextColumn();
-                var f = 1;
-                ImGui.Combo("Layer Test", ref f, new[] { "Layer 1", "Layer 2" });
+
+                ImGui.SetColumnOffset(1, ImGui.GetWindowContentRegionWidth() * 0.4f);
+                var layerIndex = gameObject.layerIndex;
+                if (ImGui.Combo("Layer", ref layerIndex, TagLayerManager.instanceLayers.ToArray()))
+                    gameObject.layerIndex = layerIndex;
+
+                ImGui.SameLine();
+                if (ImGui.Button(" + "))
+                    TagLayerManager.Select();
             }
             ImGui.EndChildFrame();
 
@@ -74,9 +88,8 @@
                                 // Reset Component
                             }
                             if (ImGui.Selectable("Remove Component"))
-                            {
                                 BroEngine.Object.Destroy(component);
-                            }
+
                             ImGui.EndPopup();
                         }
 
@@ -124,9 +137,21 @@
             {
                 ImGui.NextColumn();
                 if (ImGui.Button(
-                    "Add Component", new Vector2(ImGui.GetColumnWidth(ImGui.GetColumnIndex()) - 15f, 0)))
+                    "Add Component",
+                    new Vector2(ImGui.GetColumnWidth(ImGui.GetColumnIndex()) - 15f, 0)))
+                    ImGui.OpenPopup("Add Component Popup");
+
+                if (ImGui.BeginPopup("Add Component Popup"))
                 {
-                    // Add Component
+                    foreach (var type in Assembly.GetCallingAssembly().GetTypes())
+                    {
+                        if (!typeof(Component).IsAssignableFrom(type) || type.IsAbstract)
+                            continue;
+
+                        if (ImGui.MenuItem(type.Name))
+                            gameObject.AddComponent(type);
+                    }
+                    ImGui.EndPopup();
                 }
             }
         }

@@ -45,9 +45,9 @@
         {
             return s_Objects.FirstOrDefault(o => o is T) as T;
         }
-        public static IEnumerable<T> FindObjectsOfType<T>() where T : Object
+        public static T[] FindObjectsOfType<T>() where T : Object
         {
-            return s_Objects.Where(o => o is T).Cast<T>();
+            return s_Objects.Where(o => o is T).Cast<T>().ToArray();
         }
 
         public static void Destroy(Object o)

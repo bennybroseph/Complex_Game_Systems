@@ -84,6 +84,9 @@
     <Reference Include="ImGui.NET, Version=0.0.0.0, Culture=neutral, processorArchitecture=MSIL">
       <HintPath>..\packages\ImGui.NET.0.2.1\lib\netstandard1.1\ImGui.NET.dll</HintPath>
     </Reference>
+    <Reference Include="JetBrains.Annotations, Version=11.0.0.0, Culture=neutral, PublicKeyToken=1010a0d8d6380325, processorArchitecture=MSIL">
+      <HintPath>..\packages\JetBrains.Annotations.11.0.0\lib\net20\JetBrains.Annotations.dll</HintPath>
+    </Reference>
     <Reference Include="OpenTK, Version=2.0.0.0, Culture=neutral, PublicKeyToken=bad199fe84eb3df4, processorArchitecture=MSIL">
       <HintPath>..\packages\OpenTK.2.0.0\lib\net20\OpenTK.dll</HintPath>
       <Private>True</Private>
@@ -103,8 +106,10 @@
     <Compile Include="BroEngineEditor\CustomEditorAttribute.cs" />
     <Compile Include="BroEngineEditor\Editor.cs" />
     <Compile Include="BroEngineEditor\GameObjectEditor.cs" />
+    <Compile Include="BroEngineEditor\MainMenu.cs" />
     <Compile Include="BroEngineEditor\MeshFilterEditor.cs" />
     <Compile Include="BroEngineEditor\MeshRendererEditor.cs" />
+    <Compile Include="BroEngineEditor\TagLayerEditor.cs" />
     <Compile Include="BroEngine\DisallowMultipleComponentAttribute.cs" />
     <Compile Include="BroEngine\RequireComponentAttribute.cs" />
     <Compile Include="BroEngineEditor\TransformEditor.cs" />
@@ -116,6 +121,7 @@
     <Compile Include="BroEngineEditor\Inspector.cs" />
     <Compile Include="BroEngine\MeshFilter.cs" />
     <Compile Include="BroEngine\Renderer.cs" />
+    <Compile Include="BroEngine\TagLayerManager.cs" />
     <Compile Include="Geometry\Animation.cs" />
     <Compile Include="Audio\Audio.cs" />
     <Compile Include="Audio\MusicPlayer.cs" />

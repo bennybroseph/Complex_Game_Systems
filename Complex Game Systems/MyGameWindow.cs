@@ -1,6 +1,5 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.IO;
 using BroEngine;
 
 using BroEngineEditor;
@@ -8,12 +7,13 @@ using BroEngineEditor;
 using Geometry;
 using Geometry.Shapes;
 
+using ImGuiNET;
+
 using ImGuiUtility;
 
 using OpenTK;
 using OpenTK.Graphics;
 using OpenTK.Graphics.OpenGL;
-using OpenTK.Input;
 
 using UI;
 
@@ -94,8 +94,8 @@ public class MyGameWindow : GameWindow
         MusicPlayer.Init("Content\\Music\\Songs");
 
         ImGuiOpenTK.Init(this);
-        ImGuiOpenTK.drawEvent += Inspector.DrawGui;
 
+        MainMenu.Init();
         Inspector.Init();
 
         m_Canvas = new Canvas(this);
@@ -225,10 +225,10 @@ public class MyGameWindow : GameWindow
 
         var camera = m_MainCamera.AddComponent<BroEngine.Camera>();
         camera.SetLookAt(new Vector3(0f, 5f, 10f), Vector3.Zero, new Vector3(0f, 1f, 0f));
-        m_MainCamera.tag = "MainCamera";
+        m_MainCamera.tag = "Main Camera";
 
         m_TestObject.AddComponent<MeshRenderer<Vertex>>();
-        Inspector.selectedObject = m_Moon;
+        Inspector.selectedObject = m_MainCamera;
 
         RenderFrame += OnRenderFrameEvent;
     }
@@ -249,7 +249,7 @@ public class MyGameWindow : GameWindow
                 m_Sun.transform.eulerAngles.Y,
                 m_Sun.transform.eulerAngles.Z);
 
-        m_Moon.transform.localScale = new Vector3(2.0f, 1.1f, 1.1f);
+        m_Moon.transform.localScale = new Vector3(7.0f, 1.1f, 1.1f);
         m_Moon.transform.eulerAngles = new Vector3(0f, 0f, 0f);
         m_Moon.transform.position = new Vector3(2f, 2f, 0f);
 

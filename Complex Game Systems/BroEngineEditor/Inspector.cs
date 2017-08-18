@@ -9,6 +9,8 @@
 
     using ImGuiNET;
 
+    using ImGuiUtility;
+
     using Object = BroEngine.Object;
 
     public static class Inspector
@@ -34,10 +36,17 @@
                         customEditor.type,
                         Activator.CreateInstance(type) as Editor);
             }
+
+
+            ImGuiOpenTK.drawEvent += DrawGui;
         }
 
         public static void DrawGui()
         {
+            //var t = true;
+            //ImGuiNative.igShowTestWindow(ref t);
+            //return;
+
             if (ImGui.BeginWindow("Inspector", WindowFlags.NoMove))
             {
                 ImGui.SetWindowSize(
@@ -45,7 +54,7 @@
                     SetCondition.Always);
 
                 ImGuiNative.igSetWindowPos(
-                    new Vector2(MyGameWindow.main.Width - ImGui.GetWindowSize().X, 0f),
+                    new Vector2(MyGameWindow.main.Width - ImGui.GetWindowSize().X, MainMenu.menuHeight),
                     SetCondition.Always);
 
                 ImGui.PushID(selectedObject.id);
@@ -69,7 +78,6 @@
                 }
                 ImGuiNative.igEndGroup();
                 ImGui.PopID();
-
             }
             ImGui.EndWindow();
         }

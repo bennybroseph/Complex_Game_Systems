@@ -10,7 +10,7 @@
         public static Camera[] allCameras => FindObjectsOfType<Camera>().ToArray();
         public static int allCamerasCount => allCameras.Length;
 
-        public static Camera main => GameObject.FindGameObjectWithTag("MainCamera")?.GetComponent<Camera>();
+        public static Camera main => GameObject.FindGameObjectWithTag("Main Camera")?.GetComponent<Camera>();
 
         private float m_FieldOfView;
         private float m_Near;

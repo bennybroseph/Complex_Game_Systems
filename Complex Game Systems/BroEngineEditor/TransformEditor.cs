@@ -4,8 +4,6 @@
 
     using BroEngine;
 
-    using Geometry;
-
     using ImGuiNET;
 
     [CustomEditor(typeof(Transform))]
@@ -13,7 +11,6 @@
     {
         public override void OnInspectorGUI()
         {
-            var t = typeof(MeshRenderer<>);
             var transform = target as Transform;
             if (transform == null)
                 return;
@@ -30,12 +27,12 @@
             var localScale = transform.localScale.X;
 
             if (ImGui.DragVector3(
-                "Position", ref localPosition, float.MinValue, float.MaxValue, 0.1f, "%.3f"))
+                "Position", ref localPosition, float.MinValue, float.MaxValue, 0.01f, "%.3f"))
                 transform.localPosition =
                     new OpenTK.Vector3(localPosition.X, localPosition.Y, localPosition.Z);
 
             if (ImGui.DragVector3(
-                "Rotation", ref localRotation, float.MinValue, float.MaxValue, 0.1f, "%.3f"))
+                "Rotation", ref localRotation, float.MinValue, float.MaxValue, 0.01f, "%.3f"))
                 transform.localEulerAngles =
                     new OpenTK.Vector3(localRotation.X, localRotation.Y, localRotation.Z);
 

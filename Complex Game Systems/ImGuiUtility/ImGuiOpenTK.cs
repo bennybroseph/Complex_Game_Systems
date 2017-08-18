@@ -4,7 +4,6 @@
     using System.Drawing;
 
     using ImGuiNET;
-
     using OpenTK;
     using OpenTK.Graphics.OpenGL;
     using OpenTK.Input;
@@ -116,7 +115,7 @@
         private static unsafe void RenderImDrawData(DrawData* draw_data)
         {
             // We are using the OpenGL fixed pipeline to make the example code simpler to read!
-            // Setup render state: alpha-blending enabled, no face culling, no depth testing, 
+            // Setup render state: alpha-blending enabled, no face culling, no depth testing,
             // scissor enabled, vertex/texcoord/color pointers.
             GL.GetInteger(GetPName.TextureBinding2D, out int lastTexture);
             GL.PushAttrib(AttribMask.EnableBit | AttribMask.ColorBufferBit | AttribMask.TransformBit);
@@ -217,7 +216,9 @@
             var cursorState = Mouse.GetCursorState();
             var mouseState = Mouse.GetState();
 
-            if (s_Window.Bounds.Contains(cursorState.X, cursorState.Y))
+            // INCORRECT
+            // if (s_Window.Bounds.Contains(cursorState.X, cursorState.Y))
+            if (s_Window.Focused)
             {
                 var windowPoint = s_Window.PointToClient(new Point(cursorState.X, cursorState.Y));
                 io.MousePosition =

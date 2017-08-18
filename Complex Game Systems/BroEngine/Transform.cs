@@ -7,6 +7,7 @@
 
     using OpenTK;
 
+    [DisallowMultipleComponent]
     public class Transform : Component, IEnumerable<Transform>
     {
         private readonly List<Transform> m_Children = new List<Transform>();
@@ -173,8 +174,7 @@
             if (newParent == parent || newParent == this)
                 return;
 
-            if (parent != null)
-                parent.m_Children.Remove(this);
+            parent?.m_Children.Remove(this);
 
             var parentToChild = false;
             if (m_Children.Count > 0)
@@ -211,9 +211,9 @@
                 m_Children.Clear();
             }
 
-            Vector3 oldPosition = Vector3.Zero;
-            Vector3 oldEulerAngle = Vector3.Zero;
-            Vector3 oldScale = Vector3.One;
+            var oldPosition = Vector3.Zero;
+            var oldEulerAngle = Vector3.Zero;
+            var oldScale = Vector3.One;
             if (keepWorldTransformation)
             {
                 oldPosition = position;
@@ -223,8 +223,7 @@
 
             parent = newParent;
 
-            if (newParent != null)
-                newParent.m_Children.Add(this);
+            newParent?.m_Children.Add(this);
 
             if (keepWorldTransformation)
             {
