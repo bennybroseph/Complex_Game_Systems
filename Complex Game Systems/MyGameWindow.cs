@@ -95,10 +95,11 @@ public class MyGameWindow : GameWindow
 
         ImGuiOpenTK.Init(this);
 
-        ImGuiOpenTK.drawEvent += DockWindowTest.DrawGui;
+        //ImGuiOpenTK.drawEvent += new ResizableWindow().DrawGui;
 
         MainMenu.Init();
         Inspector.Init();
+        Hierarchy.Init();
 
         m_Canvas = new Canvas(this);
 
@@ -190,7 +191,7 @@ public class MyGameWindow : GameWindow
 
         var earthMeshRenderer = m_Earth.AddComponent<MeshRenderer<Vertex>>();
         earthMeshRenderer.shader = ShaderProgram.texture;
-        earthMeshRenderer.diffuseTexture = m_Texture;
+        earthMeshRenderer.diffuseTexture = duane;
 
         earthMeshRenderer.Bind();
         earthMeshRenderer.BufferData();
@@ -209,7 +210,7 @@ public class MyGameWindow : GameWindow
 
         var moonMeshRenderer = m_Moon.AddComponent<MeshRenderer<Vertex>>();
         moonMeshRenderer.shader = ShaderProgram.texture;
-        moonMeshRenderer.diffuseTexture = m_Texture;
+        moonMeshRenderer.diffuseTexture = sheGotTheMoves;
 
         moonMeshRenderer.Bind();
         moonMeshRenderer.BufferData();

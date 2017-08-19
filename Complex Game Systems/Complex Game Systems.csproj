@@ -104,7 +104,8 @@
   <ItemGroup>
     <Compile Include="BroEngineEditor\CameraEditor.cs" />
     <Compile Include="BroEngineEditor\CustomEditorAttribute.cs" />
-    <Compile Include="BroEngineEditor\DockWindowTest.cs" />
+    <Compile Include="BroEngineEditor\Hierarchy.cs" />
+    <Compile Include="BroEngineEditor\ResizableWindow.cs" />
     <Compile Include="BroEngineEditor\Editor.cs" />
     <Compile Include="BroEngineEditor\GameObjectEditor.cs" />
     <Compile Include="BroEngineEditor\MainMenu.cs" />
