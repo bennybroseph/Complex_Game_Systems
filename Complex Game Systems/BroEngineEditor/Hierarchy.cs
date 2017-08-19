@@ -1,5 +1,6 @@
 ﻿namespace BroEngineEditor
 {
+    using System;
     using System.Collections.Generic;
     using System.Numerics;
 
@@ -8,6 +9,8 @@
     using ImGuiNET;
 
     using ImGuiUtility;
+
+    using Object = BroEngine.Object;
 
     internal static class Hierarchy
     {
@@ -85,7 +88,7 @@
 
                                     currentStack.Dequeue();
                                     tempQueue.Push(new Queue<GameObject>());
-                                    foreach (var child in gameObject.transform)
+                                    foreach (var child in currentObject.transform)
                                         tempQueue.Peek().Enqueue(child.gameObject);
                                     gameObjectStacks.Push(tempQueue.Peek());
 
