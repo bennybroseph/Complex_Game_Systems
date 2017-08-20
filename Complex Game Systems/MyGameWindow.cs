@@ -273,8 +273,10 @@ public class MyGameWindow : GameWindow
         {
             camera.Render();
 
-            MusicPlayer.Draw();
+            if (!camera.enabled)
+                continue;
 
+            MusicPlayer.Draw();
             m_Canvas.Draw();
         }
 

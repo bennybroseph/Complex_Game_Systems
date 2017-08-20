@@ -79,7 +79,7 @@
             {
                 ImGui.PushID(component.id);
                 {
-                    if (DrawCollapsableHeader(component))
+                    if (DrawCollapsingHeader(component))
                     {
                         if (ImGui.BeginPopupContextItem("Component Menu", 1))
                         {
@@ -156,7 +156,7 @@
             }
         }
 
-        private bool DrawCollapsableHeader(Component component)
+        private static bool DrawCollapsingHeader(Component component)
         {
             var enabledProperty = component.GetType().GetProperty("enabled");
 
@@ -166,10 +166,17 @@
 
             if (enabledProperty != null)
             {
-                ImGui.SameLine();
-                var enabled = (bool)enabledProperty.GetMethod.Invoke(component, null);
-                if (ImGui.Checkbox(component.name, ref enabled))
-                    enabledProperty.SetMethod.Invoke(component, new object[] { enabled });
+                ImGui.PushID("Enabled Checkbox");
+                {
+                    ImGui.SameLine();
+                    var enabled = (bool) enabledProperty.GetMethod.Invoke(component, null);
+                    if (ImGui.Checkbox("", ref enabled))
+                        enabledProperty.SetMethod.Invoke(component, new object[] {enabled});
+
+                    ImGui.SameLine();
+                    ImGui.Text(component.name);
+                }
+                ImGui.PopID();
             }
 
             return expanded;
