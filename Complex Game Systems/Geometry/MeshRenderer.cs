@@ -2,6 +2,7 @@
 {
     using BroEngine;
 
+    using OpenTK;
     using OpenTK.Graphics;
     using OpenTK.Graphics.OpenGL;
 
@@ -70,7 +71,7 @@
             GetComponent<MeshFilter<TVertex>>()?.mesh.BufferData(shader);
         }
 
-        internal override void Render(Camera camera)
+        internal override void Render(Matrix4 viewProjection)
         {
             if (!enabled)
                 return;
@@ -79,7 +80,7 @@
             {
                 // get uniform location
                 var location = shader.GetUniformLocation("projectionMatrix");
-                var tempMatrix = transform.worldSpaceMatrix * camera.viewProjection;
+                var tempMatrix = transform.worldSpaceMatrix * viewProjection;
 
                 // set uniform value
                 GL.UniformMatrix4(location, false, ref tempMatrix);

@@ -11,7 +11,7 @@ namespace BroEngine
         public Bounds bounds => m_Bounds;
         public bool enabled { get; set; } = true;
 
-        internal abstract void Render(Camera camera);
+        internal abstract void Render(Matrix4 viewProjection);
 
         public void DrawGizmos()
         {

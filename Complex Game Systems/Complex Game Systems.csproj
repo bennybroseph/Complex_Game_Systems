@@ -125,6 +125,7 @@
     <Compile Include="BroEngine\MeshFilter.cs" />
     <Compile Include="BroEngine\Renderer.cs" />
     <Compile Include="BroEngine\TagLayerManager.cs" />
+    <Compile Include="FlyCamera.cs" />
     <Compile Include="Geometry\Animation.cs" />
     <Compile Include="Audio\Audio.cs" />
     <Compile Include="Audio\MusicPlayer.cs" />
@@ -135,6 +136,7 @@
     <Compile Include="FMOD\fmod_errors.cs" />
     <Compile Include="Geometry\SpriteSheet.cs" />
     <Compile Include="ImGuiUtility\ImGuiOpenTK.cs" />
+    <Compile Include="BroEngine\MonoBehaviour.cs" />
     <Compile Include="MyGameWindow.cs" />
     <Compile Include="Geometry\IBO.cs" />
     <Compile Include="Geometry\Matrix4Uniform.cs" />

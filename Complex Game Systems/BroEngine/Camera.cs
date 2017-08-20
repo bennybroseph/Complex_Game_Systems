@@ -110,7 +110,7 @@
                 (int)(MyGameWindow.main.Height * rect.size.Y));
 
             foreach (var renderer in FindObjectsOfType<Renderer>())
-                renderer.Render(this);
+                renderer.Render(viewProjection);
         }
     }
 }

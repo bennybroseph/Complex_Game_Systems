@@ -84,6 +84,7 @@ public class MyGameWindow : GameWindow
         GL.DebugMessageCallback(OnDebugMessage, IntPtr.Zero);
 
         GL.Enable(EnableCap.Blend);
+        GL.Enable(EnableCap.DepthTest);
         GL.BlendFunc(BlendingFactorSrc.SrcAlpha, BlendingFactorDest.OneMinusSrcAlpha);
 
         Time.Init();
@@ -269,6 +270,8 @@ public class MyGameWindow : GameWindow
     {
         GL.Clear(ClearBufferMask.ColorBufferBit | ClearBufferMask.DepthBufferBit);
 
+        Gizmos.DrawCube(Vector3.Zero, Vector3.One);
+
         foreach (var camera in BroEngine.Camera.allCameras)
         {
             camera.Render();
@@ -276,15 +279,17 @@ public class MyGameWindow : GameWindow
             if (!camera.enabled)
                 continue;
 
+            Gizmos.Render(camera.viewProjection);
+
             MusicPlayer.Draw();
             m_Canvas.Draw();
         }
-
-        Gizmos.DrawCube(Vector3.Zero, Vector3.One);
 
         GL.Viewport(0, 0, Width, Height);
         ImGuiOpenTK.RenderFrame();
 
         SwapBuffers();
+
+        Gizmos.ClearDrawCalls();
     }
 }

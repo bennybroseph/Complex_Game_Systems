@@ -9,10 +9,21 @@
 
     public static class Gizmos
     {
+        private delegate void DrawGizmo(Matrix4 viewProjection);
+        private static List<DrawGizmo> s_DrawCalls = new List<DrawGizmo>();
+
         public static void Init()
         {
             Plane.Init();
         }
+
+        internal static void Render(Matrix4 viewProjection)
+        {
+            foreach (var drawGizmo in s_DrawCalls)
+                drawGizmo(viewProjection);
+        }
+
+        internal static void ClearDrawCalls() { s_DrawCalls.Clear(); }
 
         public static void DrawRectangle(Vector2 start, Vector2 end, Color4 colorStart, Color4 colorEnd)
         {
@@ -102,26 +113,77 @@
             GL.PopMatrix();
         }
 
-        public static void DrawCube(Vector3 center, Vector3 size)
+        public static void DrawCube(Vector3 center, Vector3 size, bool drawWireFrame = true)
         {
-            GL.UseProgram(0);
-
-            GL.PushMatrix();
+            void NewAction(Matrix4 viewProjection)
             {
-                var matrix = BroEngine.Camera.main.transform.worldSpaceMatrix;
-                GL.LoadMatrix(ref matrix);
+                GL.UseProgram(0);
 
-                var min = center - size / 2f;
-                var max = center + size / 2f;
-                GL.Begin(PrimitiveType.Polygon);
+                GL.PushMatrix();
                 {
-                    GL.Vertex3(min);
-                    GL.Vertex3(min + new Vector3(size.X / 2f, 0f, 0f));
-                    GL.Vertex3(max);
+                    GL.LoadMatrix(ref viewProjection);
+
+                    var extents = size / 2f;
+
+                    var vert0 = center + new Vector3(-extents.X, -extents.Y, extents.Z);
+                    var vert1 = vert0 + new Vector3(size.X, 0f, 0f);
+                    var vert2 = vert0 + new Vector3(0f, size.Y, 0f);
+                    var vert3 = vert2 + new Vector3(size.X, 0f, 0f);
+
+                    var vert4 = center - extents;
+                    var vert5 = vert4 + new Vector3(size.X, 0f, 0f);
+                    var vert6 = vert4 + new Vector3(0f, size.Y, 0);
+                    var vert7 = vert6 + new Vector3(size.X, 0f, 0f);
+
+                    if (drawWireFrame)
+                    {
+                        GL.Begin(PrimitiveType.LineStrip);
+                        {
+                            GL.Vertex3(vert0);
+                            GL.Vertex3(vert1);
+                            GL.Vertex3(vert3);
+                            GL.Vertex3(vert2);
+                            GL.Vertex3(vert0);
+                            GL.Vertex3(vert4);
+                            GL.Vertex3(vert6);
+                            GL.Vertex3(vert2);
+                            GL.Vertex3(vert6);
+                            GL.Vertex3(vert7);
+                            GL.Vertex3(vert5);
+                            GL.Vertex3(vert4);
+                            GL.Vertex3(vert5);
+                            GL.Vertex3(vert1);
+                            GL.Vertex3(vert3);
+                            GL.Vertex3(vert7);
+                        }
+                        GL.End();
+                    }
+                    else
+                    {
+                        GL.Begin(PrimitiveType.TriangleStrip);
+                        {
+                            GL.Vertex3(vert7);
+                            GL.Vertex3(vert6);
+                            GL.Vertex3(vert3);
+                            GL.Vertex3(vert2);
+                            GL.Vertex3(vert0);
+                            GL.Vertex3(vert6);
+                            GL.Vertex3(vert4);
+                            GL.Vertex3(vert7);
+                            GL.Vertex3(vert5);
+                            GL.Vertex3(vert3);
+                            GL.Vertex3(vert1);
+                            GL.Vertex3(vert0);
+                            GL.Vertex3(vert5);
+                            GL.Vertex3(vert4);
+                        }
+                        GL.End();
+                    }
                 }
-                GL.End();
+                GL.PopMatrix();
             }
-            GL.PopMatrix();
+
+            s_DrawCalls.Add(NewAction);
         }
     }
 }
