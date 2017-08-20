@@ -7,8 +7,6 @@ using BroEngineEditor;
 using Geometry;
 using Geometry.Shapes;
 
-using ImGuiNET;
-
 using ImGuiUtility;
 
 using OpenTK;
@@ -18,6 +16,8 @@ using OpenTK.Graphics.OpenGL;
 using UI;
 
 using Utility;
+
+using Object = BroEngine.Object;
 
 public class MyGameWindow : GameWindow
 {
@@ -230,7 +230,6 @@ public class MyGameWindow : GameWindow
         camera.SetLookAt(new Vector3(0f, 5f, 10f), Vector3.Zero, new Vector3(0f, 1f, 0f));
         m_MainCamera.tag = "Main Camera";
 
-        m_TestObject.AddComponent<MeshRenderer<Vertex>>();
         Inspector.selectedObject = m_MainCamera;
 
         RenderFrame += OnRenderFrameEvent;
@@ -243,9 +242,9 @@ public class MyGameWindow : GameWindow
         m_Camera.Update();
         MusicPlayer.Update();
 
-        m_Sun.transform.position =
-            new Vector3(
-                m_Sun.transform.position.X - 0.01f, m_Sun.transform.position.Y, m_Sun.transform.position.Z);
+        //m_Sun.transform.position =
+        //    new Vector3(
+        //        m_Sun.transform.position.X - 0.01f, m_Sun.transform.position.Y, m_Sun.transform.position.Z);
         m_Sun.transform.eulerAngles =
             new Vector3(
                 m_Sun.transform.eulerAngles.X + 1f,
@@ -270,21 +269,18 @@ public class MyGameWindow : GameWindow
     {
         GL.Clear(ClearBufferMask.ColorBufferBit | ClearBufferMask.DepthBufferBit);
 
-        foreach (var model in m_MeshRenderers)
+        foreach (var camera in BroEngine.Camera.allCameras)
         {
-            model.Bind();
-            {
-                model.Render();
-            }
-            model.UnBind();
+            camera.Render();
+
+            MusicPlayer.Draw();
+
+            m_Canvas.Draw();
         }
-
-        MusicPlayer.Draw();
-
-        m_Canvas.Draw();
 
         Gizmos.DrawCube(Vector3.Zero, Vector3.One);
 
+        GL.Viewport(0, 0, Width, Height);
         ImGuiOpenTK.RenderFrame();
 
         SwapBuffers();

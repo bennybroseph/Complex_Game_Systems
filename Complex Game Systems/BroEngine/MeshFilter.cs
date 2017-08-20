@@ -2,7 +2,7 @@
 {
     using Geometry;
 
-    public class MeshFilter<TVertex> : Renderer where TVertex : struct
+    public class MeshFilter<TVertex> : Component where TVertex : struct
     {
         public Mesh<TVertex> mesh { get; set; }
     }

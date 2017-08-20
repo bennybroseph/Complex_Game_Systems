@@ -79,7 +79,7 @@
             {
                 ImGui.PushID(component.id);
                 {
-                    if (ImGui.CollapsingHeader(component.name, component.id.ToString(), true, true))
+                    if (DrawCollapsableHeader(component))
                     {
                         if (ImGui.BeginPopupContextItem("Component Menu", 1))
                         {
@@ -154,6 +154,25 @@
                     ImGui.EndPopup();
                 }
             }
+        }
+
+        private bool DrawCollapsableHeader(Component component)
+        {
+            var enabledProperty = component.GetType().GetProperty("enabled");
+
+            var label = enabledProperty == null ? component.name : "";
+            var flags = TreeNodeFlags.Framed | TreeNodeFlags.DefaultOpen | TreeNodeFlags.AllowOverlapMode;
+            var expanded = ImGui.CollapsingHeader(label, flags);
+
+            if (enabledProperty != null)
+            {
+                ImGui.SameLine();
+                var enabled = (bool)enabledProperty.GetMethod.Invoke(component, null);
+                if (ImGui.Checkbox(component.name, ref enabled))
+                    enabledProperty.SetMethod.Invoke(component, new object[] { enabled });
+            }
+
+            return expanded;
         }
     }
 }

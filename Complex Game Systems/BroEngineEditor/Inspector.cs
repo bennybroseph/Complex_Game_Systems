@@ -5,6 +5,7 @@
     using System.Linq;
     using System.Numerics;
     using System.Reflection;
+    using System.Runtime.InteropServices;
     using System.Text;
     using System.Windows.Forms;
 
@@ -48,7 +49,7 @@
             ImGuiOpenTK.drawEvent += DrawGui;
         }
 
-        private static void DrawGui()
+        private static unsafe void DrawGui()
         {
             //var t = true;
             //ImGuiNative.igShowTestWindow(ref t);
@@ -64,15 +65,16 @@
                     new Vector2(MyGameWindow.main.Width - ImGui.GetWindowSize().X, MainMenu.menuHeight),
                     SetCondition.Always);
 
-                TryResizeNSWE();
+                if (!ImGui.IsAnyItemActive())
+                    TryResizeNSWE();
 
                 ImGui.PushID(selectedObject.id);
                 ImGuiNative.igBeginGroup();
                 {
-                    var buffer = Encoding.Default.GetBytes(selectedObject.name);
-                    if (ImGui.InputText(
-                        "Name", buffer, 35, InputTextFlags.EnterReturnsTrue, null))
-                        selectedObject.name = Encoding.Default.GetString(buffer);
+                    var buffer = Marshal.StringToHGlobalAuto(selectedObject.name);
+                    var bufferSize = (uint)Encoding.Unicode.GetByteCount(selectedObject.name);
+                    ImGuiNative.igInputText(
+                        "Name", buffer, bufferSize, InputTextFlags.EnterReturnsTrue, OnEditName, null);
 
                     if (s_Editors.TryGetValue(selectedObject.GetType(), out Editor editor))
                     {
@@ -89,6 +91,11 @@
                 ImGui.PopID();
             }
             ImGui.EndWindow();
+        }
+        private static unsafe int OnEditName(TextEditCallbackData* data)
+        {
+            selectedObject.name = Marshal.PtrToStringAuto(data->Buf);
+            return 1;
         }
 
         private static unsafe void TryResizeNSWE()
@@ -111,8 +118,8 @@
             }
             else
             {
-                    TryResizeNS();
-                    TryResizeWE();
+                TryResizeNS();
+                TryResizeWE();
             }
         }
 

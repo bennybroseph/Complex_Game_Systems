@@ -23,9 +23,27 @@
 
         private static void DrawGui()
         {
-            ImGui.BeginWindow("Hierarchy", WindowFlags.NoMove);
+            ImGui.BeginWindow("Hierarchy", WindowFlags.NoMove | WindowFlags.MenuBar);
             {
                 ImGuiNative.igSetWindowPos(new Vector2(0f, MainMenu.menuHeight), SetCondition.Always);
+
+                if (ImGuiNative.igBeginPopupContextWindow(false, "Hierarchy Context Menu", 1))
+                {
+                    DrawCreateMenu();
+
+                    ImGui.EndPopup();
+                }
+
+                if (ImGui.BeginMenuBar())
+                {
+                    if (ImGui.BeginMenu("Create"))
+                    {
+                        DrawCreateMenu();
+                        ImGui.EndMenu();
+                    }
+
+                    ImGui.EndMenuBar();
+                }
 
                 var indentLevel = 0;
                 foreach (var gameObject in Object.FindObjectsOfType<GameObject>())
@@ -50,25 +68,35 @@
                                 var collapsed = false;
                                 var selected = Inspector.selectedObject == currentObject;
 
-                                ImGui.PushStyleColor(ColorTarget.HeaderHovered, Vector4.Zero);
-                                ImGui.PushStyleColor(ColorTarget.HeaderActive, Vector4.Zero);
+                                //ImGui.PushStyleColor(ColorTarget.HeaderHovered, Vector4.Zero);
+                                //ImGui.PushStyleColor(ColorTarget.HeaderActive, Vector4.Zero);
                                 if (selected)
                                     ImGuiNative.igPushStyleColor(
                                         ColorTarget.Text,
-                                        new Vector4(143f /255f, 143f / 255f, 200f / 255f, 1f));
+                                        new Vector4(143f / 255f, 143f / 255f, 200f / 255f, 1f));
 
-                                collapsed =
-                                    ImGui.TreeNodeEx(
-                                        currentObject.name,
-                                        currentObject.transform.childCount > 0
-                                            ? TreeNodeFlags.OpenOnArrow
-                                            : TreeNodeFlags.OpenOnArrow | TreeNodeFlags.Leaf);
-                                if (collapsed)
-                                    ImGui.TreePop();
+                                var flags =
+                                    currentObject.transform.childCount > 0
+                                        ? TreeNodeFlags.OpenOnArrow
+                                        : TreeNodeFlags.OpenOnArrow | TreeNodeFlags.Leaf;
+                                if (selected)
+                                    flags |= TreeNodeFlags.Selected;
 
+                                collapsed = ImGui.TreeNodeEx(currentObject.name, flags);
                                 if (selected)
                                     ImGui.PopStyleColor();
-                                ImGui.PopStyleColor(2);
+                                //ImGui.PopStyleColor();
+
+                                if (ImGui.BeginPopupContextItem("GameObject Context Menu"))
+                                {
+                                    if (ImGui.Selectable("Delete"))
+                                        ; // Object.Destroy(currentObject);
+
+                                    ImGui.EndPopup();
+                                }
+
+                                if (collapsed)
+                                    ImGui.TreePop();
 
                                 if (ImGuiNative.igIsItemHovered())
                                 {
@@ -140,6 +168,21 @@
                     s_DraggedObject = null;
             }
             ImGui.EndWindow();
+        }
+
+        private static void DrawCreateMenu()
+        {
+            if (ImGui.MenuItem("Create Empty"))
+                new GameObject();
+
+            if (ImGui.BeginMenu("3D"))
+            {
+                foreach (PrimitiveType name in Enum.GetValues(typeof(PrimitiveType)))
+                    if (ImGui.MenuItem(name.ToString()))
+                        GameObject.CreatePrimitive(name);
+
+                ImGui.EndMenu();
+            }
         }
     }
 }

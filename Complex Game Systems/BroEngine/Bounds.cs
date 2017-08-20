@@ -3,7 +3,7 @@
     using System.Diagnostics;
     using OpenTK;
 
-    public class Bounds
+    public struct Bounds
     {
         public Vector3 center { get; set; }
         public Vector3 size { get; set; }

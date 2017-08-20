@@ -29,9 +29,8 @@
                 if (ImGui.BeginMenu("Preferences"))
                 {
                     if (ImGui.MenuItem(TagLayerManager.displayName))
-                    {
                         TagLayerManager.Select();
-                    }
+
                     ImGui.EndMenu();
                 }
 

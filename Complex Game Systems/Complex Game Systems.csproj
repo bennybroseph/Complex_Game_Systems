@@ -113,6 +113,7 @@
     <Compile Include="BroEngineEditor\MeshRendererEditor.cs" />
     <Compile Include="BroEngineEditor\TagLayerEditor.cs" />
     <Compile Include="BroEngine\DisallowMultipleComponentAttribute.cs" />
+    <Compile Include="BroEngine\Rect.cs" />
     <Compile Include="BroEngine\RequireComponentAttribute.cs" />
     <Compile Include="BroEngineEditor\TransformEditor.cs" />
     <Compile Include="BroEngine\Behaviour.cs" />

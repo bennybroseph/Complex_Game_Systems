@@ -5,7 +5,20 @@
     using System.Linq;
     using System.Reflection;
 
+    using Geometry;
+    using Geometry.Shapes;
+
     using JetBrains.Annotations;
+
+    public enum PrimitiveType
+    {
+        Sphere,
+        Capsule,
+        Cylinder,
+        Cube,
+        Plane,
+        Quad,
+    }
 
     public class GameObject : Object
     {
@@ -46,6 +59,42 @@
         {
             foreach (var type in types)
                 AddComponent(type);
+        }
+
+        public static GameObject CreatePrimitive(PrimitiveType primitiveType)
+        {
+            var newGameObject = new GameObject(primitiveType.ToString());
+            var newMeshFilter = newGameObject.AddComponent<MeshFilter<Vertex>>();
+            var newMeshRenderer = newGameObject.AddComponent<MeshRenderer<Vertex>>();
+
+            newMeshRenderer.shader = ShaderProgram.basic;
+
+            switch (primitiveType)
+            {
+            case PrimitiveType.Sphere:
+                break;
+            case PrimitiveType.Capsule:
+                break;
+            case PrimitiveType.Cylinder:
+                break;
+            case PrimitiveType.Cube:
+                break;
+            case PrimitiveType.Plane:
+                newMeshFilter.mesh = Plane.GetMesh();
+
+                break;
+            case PrimitiveType.Quad:
+                break;
+
+            default:
+                throw new ArgumentOutOfRangeException(nameof(primitiveType), primitiveType, null);
+            }
+
+            newMeshRenderer.Bind();
+            newMeshRenderer.BufferData();
+            newMeshRenderer.UnBind();
+
+            return newGameObject;
         }
 
         [Pure, CanBeNull]

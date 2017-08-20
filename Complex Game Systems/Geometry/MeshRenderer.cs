@@ -6,7 +6,7 @@
     using OpenTK.Graphics.OpenGL;
 
     [DisallowMultipleComponent]
-    public class MeshRenderer<TVertex> : Behaviour where TVertex : struct
+    public class MeshRenderer<TVertex> : Renderer where TVertex : struct
     {
         public ShaderProgram shader { get; set; }
 
@@ -70,16 +70,23 @@
             GetComponent<MeshFilter<TVertex>>()?.mesh.BufferData(shader);
         }
 
-        public void Render()
+        internal override void Render(Camera camera)
         {
-            // get uniform location
-            var location = shader.GetUniformLocation("projectionMatrix");
-            var tempMatrix = transform.worldSpaceMatrix * Camera.main.viewProjection;
+            if (!enabled)
+                return;
 
-            // set uniform value
-            GL.UniformMatrix4(location, false, ref tempMatrix);
+            Bind();
+            {
+                // get uniform location
+                var location = shader.GetUniformLocation("projectionMatrix");
+                var tempMatrix = transform.worldSpaceMatrix * camera.viewProjection;
 
-            GetComponent<MeshFilter<TVertex>>()?.mesh.Draw();
+                // set uniform value
+                GL.UniformMatrix4(location, false, ref tempMatrix);
+
+                GetComponent<MeshFilter<TVertex>>()?.mesh.Draw();
+            }
+            UnBind();
         }
     }
 }

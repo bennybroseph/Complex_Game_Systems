@@ -11,6 +11,8 @@ namespace BroEngine
         public Bounds bounds => m_Bounds;
         public bool enabled { get; set; } = true;
 
+        internal abstract void Render(Camera camera);
+
         public void DrawGizmos()
         {
             //Gizmos.DrawRectangle(
