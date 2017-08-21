@@ -106,7 +106,8 @@ public class MyGameWindow : GameWindow
         m_Canvas = new Canvas(this);
 
         m_Texture =
-            new Texture("Content\\Pictures\\Brock.jpg", TextureMinFilter.Nearest, TextureMagFilter.Nearest);
+            new Texture(
+                "Content\\Pictures\\basketball.jpg", TextureMinFilter.Nearest, TextureMagFilter.Nearest);
 
         var duane =
             new Animation(
@@ -169,7 +170,7 @@ public class MyGameWindow : GameWindow
         var location = ShaderProgram.texture.GetUniformLocation("lightDirection");
         GL.Uniform3(location, 1f, 0.5f, 0f);
 
-        var mesh = Plane.GetMesh();
+        var mesh = Sphere.GetMesh();
 
         m_Sun = new GameObject("Sun");
 

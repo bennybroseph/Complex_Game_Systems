@@ -15,6 +15,8 @@
         public static void Init()
         {
             Plane.Init();
+            Quad.Init();
+            Sphere.Init();
         }
 
         internal static void Render(Matrix4 viewProjection)

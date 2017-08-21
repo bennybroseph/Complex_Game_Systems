@@ -1,8 +1,8 @@
 ﻿#version 410
 
 in vec4 vColor;
-in vec2 vTextureUV;
 in vec3 vNormal;
+in vec2 vTextureUV;
 in vec3 vTangent;
 in vec3 vBiTangent;
 

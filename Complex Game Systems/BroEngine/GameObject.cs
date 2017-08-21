@@ -72,6 +72,7 @@
             switch (primitiveType)
             {
                 case PrimitiveType.Sphere:
+                    newMeshFilter.mesh = Sphere.GetMesh();
                     break;
                 case PrimitiveType.Capsule:
                     break;
@@ -81,9 +82,9 @@
                     break;
                 case PrimitiveType.Plane:
                     newMeshFilter.mesh = Plane.GetMesh();
-
                     break;
                 case PrimitiveType.Quad:
+                    newMeshFilter.mesh = Quad.GetMesh();
                     break;
 
                 default:

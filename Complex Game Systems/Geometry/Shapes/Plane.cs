@@ -14,10 +14,7 @@
         private static readonly Dictionary<string, Mesh<Vertex>> s_Meshes =
             new Dictionary<string, Mesh<Vertex>>();
 
-        public static void Init()
-        {
-            CreateMesh(DEFAULT_SEGMENTS);
-        }
+        public static void Init() { CreateMesh(DEFAULT_SEGMENTS); }
 
         public static Mesh<Vertex> GetMesh(float segments = DEFAULT_SEGMENTS)
         {
@@ -43,9 +40,7 @@
                         new Vertex(
                             new Vector3((x - segments / 2f) / segments, 0f, (y - segments / 2f) / segments),
                             new Color4(1f, 1f, 1f, 1f),
-                            new Vector2(x / segments, y / segments),
-                            new Vector3(0f, 1f, 0f),
-                            new Vector3(1f, 0f, 0f));
+                            new Vector2(x / segments, y / segments));
 
                     // Top Right
                     yield return
@@ -53,9 +48,7 @@
                             new Vector3(
                                 (x + 1f - segments / 2f) / segments, 0f, (y - segments / 2f) / segments),
                             new Color4(1f, 1f, 1f, 1f),
-                            new Vector2((x + 1f) / segments, y / segments),
-                            new Vector3(0f, 1f, 0f),
-                            new Vector3(1f, 0f, 0f));
+                            new Vector2((x + 1f) / segments, y / segments));
 
                     // Bottom Right
                     yield return
@@ -63,18 +56,14 @@
                             new Vector3(
                                 (x + 1f - segments / 2f) / segments, 0f, (y + 1f - segments / 2f) / segments),
                             new Color4(1f, 1f, 1f, 1f),
-                            new Vector2((x + 1f) / segments, (y + 1f) / segments),
-                            new Vector3(0f, 1f, 0f),
-                            new Vector3(1f, 0f, 0f));
+                            new Vector2((x + 1f) / segments, (y + 1f) / segments));
 
                     yield return
                         new Vertex(
                             new Vector3(
                                 (x - segments / 2f) / segments, 0f, (y + 1f - segments / 2f) / segments),
                             new Color4(1f, 1f, 1f, 1f),
-                            new Vector2(x / segments, (y + 1f) / segments),
-                            new Vector3(0f, 1f, 0f),
-                            new Vector3(1f, 0f, 0f));
+                            new Vector2(x / segments, (y + 1f) / segments));
                 }
             }
         }
@@ -107,9 +96,10 @@
                     GenIndexes(segments),
                     new VertexAttribute("inPosition", 3, Vertex.size, 0),
                     new VertexAttribute("inColor", 4, Vertex.size, 3 * 4),
-                    new VertexAttribute("inTextureUV", 2, Vertex.size, 3 * 4 + 4 * 4),
-                    new VertexAttribute("inNormal", 3, Vertex.size, 3 * 4 + 4 * 4 + 2 * 4),
-                    new VertexAttribute("inTangent", 2, Vertex.size, 3 * 4 + 4 * 4 + 2 * 4 + 3 * 4));
+                    new VertexAttribute("inNormal", 3, Vertex.size, 3 * 4 + 4 * 4),
+                    new VertexAttribute("inTextureUV", 2, Vertex.size, 3 * 4 + 4 * 4 + 3 * 4),
+                    new VertexAttribute("inTangent", 3, Vertex.size, 3 * 4 + 4 * 4 + 3 * 4 + 2 * 4),
+                    new VertexAttribute("inBiTangent", 3, Vertex.size, 3 * 4 + 4 * 4 + 3 * 4 + 2 * 4 + 3 * 4));
 
             s_Meshes.Add(key, mesh);
 

@@ -3,15 +3,15 @@
 // attributes of our vertex
 in vec3 inPosition;
 in vec4 inColor;
-in vec2 inTextureUV;
 in vec3 inNormal;
+in vec2 inTextureUV;
 in vec3 inTangent;
 
 // must match name in fragment shader
 out vec4 vPosition;
 out vec4 vColor;
-out vec2 vTextureUV;
 out vec3 vNormal;
+out vec2 vTextureUV;
 out vec3 vTangent;
 out vec3 vBiTangent;
 

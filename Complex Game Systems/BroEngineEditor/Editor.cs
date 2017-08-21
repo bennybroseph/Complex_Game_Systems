@@ -1,14 +1,15 @@
 ﻿namespace BroEngineEditor
 {
+    using System;
     using System.Collections.Generic;
+    using System.Drawing;
     using System.Linq;
     using System.Numerics;
-
-    using BroEngine;
-
     using ImGuiNET;
 
     using ImGuiUtility;
+    using OpenTK.Input;
+    using Object = BroEngine.Object;
 
     public enum PopupModalButtons
     {
@@ -37,6 +38,11 @@
         private static List<InspectorWindow> s_InspectorWindows = new List<InspectorWindow>();
 
         private static List<HierarchyWindow> s_HierarchyWindows = new List<HierarchyWindow>();
+
+        private static Vector2 s_FakeMousePos;
+
+        private static Vector2 s_MousePos;
+        private static Vector2 s_PrevMousePos;
 
         public static void Init()
         {
@@ -69,7 +75,77 @@
 
         private static void OnPreRender()
         {
+            if (!ImGui.IsAnyItemActive())
+                return;
 
+            var cursorState = Mouse.GetCursorState();
+            if (MyGameWindow.main.Bounds.Contains(cursorState.X, cursorState.Y))
+                return;
+
+            if (cursorState.X > MyGameWindow.main.Bounds.Right)
+            {
+                Mouse.SetPosition(MyGameWindow.main.Bounds.Left, cursorState.Y);
+
+            }
+            else if (cursorState.X < MyGameWindow.main.Bounds.Left)
+                Mouse.SetPosition(MyGameWindow.main.Bounds.Right, cursorState.Y);
+
+            if (cursorState.Y > MyGameWindow.main.Bounds.Bottom)
+                Mouse.SetPosition(cursorState.X, MyGameWindow.main.Bounds.Top);
+            else if (cursorState.Y < MyGameWindow.main.Bounds.Top)
+                Mouse.SetPosition(cursorState.X, MyGameWindow.main.Bounds.Bottom);
+
+            cursorState = Mouse.GetCursorState();
+            var windowPoint = MyGameWindow.main.PointToClient(new Point(cursorState.X, cursorState.Y));
+
+            var io = ImGui.GetIO();
+            var scaledPoint =
+                new Vector2(
+                    windowPoint.X / io.DisplayFramebufferScale.X,
+                    windowPoint.Y / io.DisplayFramebufferScale.Y);
+
+            io.MousePosition = scaledPoint - ImGui.GetMouseDragDelta(0, -1);
+            ImGui.ResetMouseDragDelta(0);
+            io.MousePosition = scaledPoint;
+
+            //cursorState = Mouse.GetCursorState();
+            //s_PrevMousePos = new Vector2(cursorState.X, cursorState.Y);
+
+            //var cursorState = Mouse.GetCursorState();
+            //if (!ImGui.IsAnyItemActive())
+            //{
+            //    if (ImGui.GetMouseDragDelta(0, -1) == Vector2.Zero)
+            //    {
+            //        s_FakeMousePos = ImGui.GetMousePos();
+
+            //        s_MousePos = new Vector2(cursorState.X, cursorState.Y);
+            //        s_PrevMousePos = s_MousePos;
+            //    }
+            //    return;
+            //}
+
+            //if (!MyGameWindow.main.Bounds.Contains(cursorState.X, cursorState.Y))
+            //{
+            //    if (cursorState.X > MyGameWindow.main.Bounds.Right)
+            //        Mouse.SetPosition(MyGameWindow.main.Bounds.Left, cursorState.Y);
+            //    else if (cursorState.X < MyGameWindow.main.Bounds.Left)
+            //        Mouse.SetPosition(MyGameWindow.main.Bounds.Right, cursorState.Y);
+
+            //    if (cursorState.Y > MyGameWindow.main.Bounds.Bottom)
+            //        Mouse.SetPosition(cursorState.X, MyGameWindow.main.Bounds.Top);
+            //    else if (cursorState.Y < MyGameWindow.main.Bounds.Top)
+            //        Mouse.SetPosition(cursorState.X, MyGameWindow.main.Bounds.Bottom);
+
+            //    cursorState = Mouse.GetCursorState();
+            //    s_PrevMousePos = new Vector2(cursorState.X, cursorState.Y);
+            //}
+
+            //s_MousePos = new Vector2(cursorState.X, cursorState.Y);
+
+            //s_FakeMousePos += s_MousePos - s_PrevMousePos;
+            //ImGui.GetIO().MousePosition = s_FakeMousePos;
+
+            //s_PrevMousePos = s_MousePos;
         }
 
         private static void OnDrawGui()
