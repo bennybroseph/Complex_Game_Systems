@@ -56,7 +56,12 @@
                 return;
 
             if (o is Component component)
+            {
+                if (component.gameObject.IsComponentRequired(component))
+                    return;
+
                 component.gameObject.RemoveComponent(component);
+            }
 
             s_IDs[o.m_ID] = true;
             s_Objects.Remove(o);

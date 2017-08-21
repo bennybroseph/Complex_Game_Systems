@@ -71,23 +71,23 @@
 
             switch (primitiveType)
             {
-            case PrimitiveType.Sphere:
-                break;
-            case PrimitiveType.Capsule:
-                break;
-            case PrimitiveType.Cylinder:
-                break;
-            case PrimitiveType.Cube:
-                break;
-            case PrimitiveType.Plane:
-                newMeshFilter.mesh = Plane.GetMesh();
+                case PrimitiveType.Sphere:
+                    break;
+                case PrimitiveType.Capsule:
+                    break;
+                case PrimitiveType.Cylinder:
+                    break;
+                case PrimitiveType.Cube:
+                    break;
+                case PrimitiveType.Plane:
+                    newMeshFilter.mesh = Plane.GetMesh();
 
-                break;
-            case PrimitiveType.Quad:
-                break;
+                    break;
+                case PrimitiveType.Quad:
+                    break;
 
-            default:
-                throw new ArgumentOutOfRangeException(nameof(primitiveType), primitiveType, null);
+                default:
+                    throw new ArgumentOutOfRangeException(nameof(primitiveType), primitiveType, null);
             }
 
             newMeshRenderer.Bind();
@@ -199,6 +199,27 @@
         {
             component.gameObject = null;
             m_Components.Remove(component);
+        }
+
+        internal void MoveComponent()
+        {
+            
+        }
+
+        internal bool IsComponentRequired(Component requiredComponent)
+        {
+            var componentType = requiredComponent.GetType();
+            foreach (var component in m_Components)
+            {
+                var requireComponentAttribute =
+                    component.GetType().GetCustomAttribute<RequireComponentAttribute>();
+                if (requireComponentAttribute == null)
+                    continue;
+
+                if (requireComponentAttribute.types.Any(requiredType => requiredType == componentType))
+                    return true;
+            }
+            return false;
         }
     }
 }

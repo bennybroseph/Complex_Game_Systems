@@ -29,7 +29,7 @@
 
                 if (ImGuiNative.igBeginPopupContextWindow(false, "Hierarchy Context Menu", 1))
                 {
-                    DrawCreateMenu();
+                    MainMenu.DrawCreateMenu();
 
                     ImGui.EndPopup();
                 }
@@ -38,7 +38,7 @@
                 {
                     if (ImGui.BeginMenu("Create"))
                     {
-                        DrawCreateMenu();
+                        MainMenu.DrawCreateMenu();
                         ImGui.EndMenu();
                     }
 
@@ -161,7 +161,7 @@
                         s_Dragging = false;
                     }
                 }
-                else
+                else if(ImGui.IsWindowFocused())
                     ImGui.SetTooltip("");
 
                 if (!s_Dragging)
@@ -170,19 +170,6 @@
             ImGui.EndWindow();
         }
 
-        private static void DrawCreateMenu()
-        {
-            if (ImGui.MenuItem("Create Empty"))
-                new GameObject();
 
-            if (ImGui.BeginMenu("3D"))
-            {
-                foreach (PrimitiveType name in Enum.GetValues(typeof(PrimitiveType)))
-                    if (ImGui.MenuItem(name.ToString()))
-                        GameObject.CreatePrimitive(name);
-
-                ImGui.EndMenu();
-            }
-        }
     }
 }

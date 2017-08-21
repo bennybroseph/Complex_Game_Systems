@@ -19,6 +19,9 @@
 
         private static bool s_IsInitialized;
 
+        private static Component s_SelectedComponent;
+        private static Component s_HoveredComponent;
+
         public GameObjectEditor()
         {
             if (s_IsInitialized)
@@ -81,18 +84,6 @@
                 {
                     if (DrawCollapsingHeader(component))
                     {
-                        if (ImGui.BeginPopupContextItem("Component Menu", 1))
-                        {
-                            if (ImGui.Selectable("Reset"))
-                            {
-                                // Reset Component
-                            }
-                            if (ImGui.Selectable("Remove Component"))
-                                BroEngine.Object.Destroy(component);
-
-                            ImGui.EndPopup();
-                        }
-
                         var componentType = component.GetType();
                         if (s_ComponentEditors.TryGetValue(componentType, out Editor editor))
                         {
@@ -158,20 +149,74 @@
 
         private static bool DrawCollapsingHeader(Component component)
         {
+            if (s_HoveredComponent == component && s_SelectedComponent != s_HoveredComponent)
+            {
+                ImGui.Separator();
+            }
+
             var enabledProperty = component.GetType().GetProperty("enabled");
 
             var label = enabledProperty == null ? component.name : "";
             var flags = TreeNodeFlags.Framed | TreeNodeFlags.DefaultOpen | TreeNodeFlags.AllowOverlapMode;
             var expanded = ImGui.CollapsingHeader(label, flags);
 
+            if (ImGui.IsMouseDragging(0, -1) && s_SelectedComponent != null)
+            {
+                if (ImGui.IsLastItemHovered())
+                    s_HoveredComponent = component;
+            }
+
+            if (ImGui.IsLastItemActive() && ImGui.IsMouseDragging(0, -1))
+            {
+                ImGui.SetTooltip(component.name);
+                s_SelectedComponent = component;
+            }
+            else if (!ImGui.IsMouseDragging(0, -1) &&ImGui.IsLastItemHovered() && s_SelectedComponent != null)
+            {
+                Console.WriteLine(component.name);
+                
+                s_SelectedComponent = null;
+                s_HoveredComponent = null;
+            }
+
+            if (ImGui.BeginPopupContextItem("Component Menu", 1))
+            {
+                if (ImGui.MenuItem("Reset", false))
+                    ;// Reset Component
+
+                ImGui.Separator();
+                if (ImGui.MenuItem("Move to Front", false))
+                    ;
+                if (ImGui.MenuItem("Move to Back", false))
+                    ;
+
+                if (ImGui.MenuItem("Remove Component"))
+                    BroEngine.Object.Destroy(component);
+
+                if (ImGui.MenuItem("Move Up", false))
+                    ;
+                if (ImGui.MenuItem("Move Down", false))
+                    ;
+
+                if (ImGui.MenuItem("Copy Component", false))
+                    ;
+
+                if (ImGui.MenuItem("Paste Component as New", false))
+                    ;
+                if (ImGui.MenuItem("Paste Component Values", false))
+                    ;
+
+                ImGui.EndPopup();
+            }
+
             if (enabledProperty != null)
             {
                 ImGui.PushID("Enabled Checkbox");
                 {
                     ImGui.SameLine();
-                    var enabled = (bool) enabledProperty.GetMethod.Invoke(component, null);
+                    var enabled = (bool)enabledProperty.GetMethod.Invoke(component, null);
                     if (ImGui.Checkbox("", ref enabled))
-                        enabledProperty.SetMethod.Invoke(component, new object[] {enabled});
+                        enabledProperty.SetMethod.Invoke(component, new object[] { enabled });
 
                     ImGui.SameLine();
                     ImGui.Text(component.name);
