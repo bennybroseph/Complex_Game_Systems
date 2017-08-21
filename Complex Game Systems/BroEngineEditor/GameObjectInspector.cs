@@ -10,37 +10,37 @@
 
     using ImGuiNET;
 
-    [CustomEditor(typeof(GameObject))]
-    public class GameObjectEditor : Editor
+    [CustomInspector(typeof(GameObject))]
+    public class GameObjectInspector : Inspector
     {
-        private static Dictionary<Type, Editor> s_ComponentEditors =
-            new Dictionary<Type, Editor>();
-        private static Editor s_DefaultEditor = new Editor();
+        private static Dictionary<Type, Inspector> s_ComponentEditors =
+            new Dictionary<Type, Inspector>();
+        private static Inspector s_DefaultInspector = new Inspector();
 
         private static bool s_IsInitialized;
 
         private static Component s_SelectedComponent;
         private static Component s_HoveredComponent;
 
-        public GameObjectEditor()
+        public GameObjectInspector()
         {
             if (s_IsInitialized)
                 return;
 
             foreach (var type in Assembly.GetExecutingAssembly().GetTypes())
             {
-                var customEditorObjects = type.GetCustomAttributes(typeof(CustomEditorAttribute), true);
+                var customEditorObjects = type.GetCustomAttributes(typeof(CustomInspectorAttribute), true);
                 if (customEditorObjects.Length <= 0)
                     continue;
 
-                var customEditor = customEditorObjects.FirstOrDefault() as CustomEditorAttribute;
+                var customEditor = customEditorObjects.FirstOrDefault() as CustomInspectorAttribute;
                 if (customEditor == null || !typeof(Component).IsAssignableFrom(customEditor.type))
                     continue;
 
                 if (!s_ComponentEditors.ContainsKey(customEditor.type))
                     s_ComponentEditors.Add(
                         customEditor.type,
-                        Activator.CreateInstance(type) as Editor);
+                        Activator.CreateInstance(type) as Inspector);
             }
 
             s_IsInitialized = true;
@@ -85,7 +85,7 @@
                     if (DrawCollapsingHeader(component))
                     {
                         var componentType = component.GetType();
-                        if (s_ComponentEditors.TryGetValue(componentType, out Editor editor))
+                        if (s_ComponentEditors.TryGetValue(componentType, out Inspector editor))
                         {
                             editor.target = component;
                             editor.OnInspectorGUI();
@@ -108,14 +108,14 @@
 
                             if (!foundEditor)
                             {
-                                s_DefaultEditor.target = component;
-                                s_DefaultEditor.OnInspectorGUI();
+                                s_DefaultInspector.target = component;
+                                s_DefaultInspector.OnInspectorGUI();
                             }
                         }
                         else
                         {
-                            s_DefaultEditor.target = component;
-                            s_DefaultEditor.OnInspectorGUI();
+                            s_DefaultInspector.target = component;
+                            s_DefaultInspector.OnInspectorGUI();
                         }
                     }
                 }

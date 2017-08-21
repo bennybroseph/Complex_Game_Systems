@@ -3,8 +3,8 @@
     using BroEngine;
     using Geometry;
 
-    [CustomEditor(typeof(MeshFilter<>))]
-    class MeshFilterEditor : Editor
+    [CustomInspector(typeof(MeshFilter<>))]
+    class MeshFilterInspector : Inspector
     {
         public override void OnInspectorGUI()
         {

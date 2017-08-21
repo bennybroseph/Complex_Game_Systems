@@ -48,7 +48,7 @@
         internal static int GetTagIndex(string tag) { return instanceTags.IndexOf(tag); }
         internal static int GetLayerIndex(string layer) { return instanceLayers.IndexOf(layer); }
 
-        internal static void Select() { Inspector.selectedObject = s_Instance; }
+        internal static void Select() { InspectorWindow.selectedObject = s_Instance; }
 
         internal static void RemoveTag(int index)
         {

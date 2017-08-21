@@ -13,8 +13,8 @@
 
     using Object = BroEngine.Object;
 
-    [CustomEditor(typeof(TagLayerManager))]
-    public class TagLayerEditor : Editor
+    [CustomInspector(typeof(TagLayerManager))]
+    public class TagLayerInspector : Inspector
     {
         private delegate void Removed(int removedIndex);
 

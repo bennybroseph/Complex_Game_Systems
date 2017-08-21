@@ -6,8 +6,8 @@
 
     using ImGuiNET;
 
-    [CustomEditor(typeof(Camera))]
-    public class CameraEditor : Editor
+    [CustomInspector(typeof(Camera))]
+    public class CameraInspector : Inspector
     {
         public override void OnInspectorGUI()
         {

@@ -12,7 +12,7 @@
 
     using Object = BroEngine.Object;
 
-    internal static class Hierarchy
+    internal static class HierarchyWindow
     {
         private static GameObject s_DraggedObject;
         private static GameObject s_HoveringObject;
@@ -25,11 +25,11 @@
         {
             ImGui.BeginWindow("Hierarchy", WindowFlags.NoMove | WindowFlags.MenuBar);
             {
-                ImGuiNative.igSetWindowPos(new Vector2(0f, MainMenu.menuHeight), SetCondition.Always);
+                ImGuiNative.igSetWindowPos(new Vector2(0f, MainMenuBar.menuHeight), SetCondition.Always);
 
                 if (ImGuiNative.igBeginPopupContextWindow(false, "Hierarchy Context Menu", 1))
                 {
-                    MainMenu.DrawCreateMenu();
+                    MainMenuBar.DrawCreateMenu();
 
                     ImGui.EndPopup();
                 }
@@ -38,7 +38,7 @@
                 {
                     if (ImGui.BeginMenu("Create"))
                     {
-                        MainMenu.DrawCreateMenu();
+                        MainMenuBar.DrawCreateMenu();
                         ImGui.EndMenu();
                     }
 
@@ -66,7 +66,7 @@
                             while (currentStack.Count > 0)
                             {
                                 var collapsed = false;
-                                var selected = Inspector.selectedObject == currentObject;
+                                var selected = InspectorWindow.selectedObject == currentObject;
 
                                 //ImGui.PushStyleColor(ColorTarget.HeaderHovered, Vector4.Zero);
                                 //ImGui.PushStyleColor(ColorTarget.HeaderActive, Vector4.Zero);
@@ -103,7 +103,7 @@
                                     s_HoveringObject = currentObject;
 
                                     if (ImGui.IsMouseClicked(0))
-                                        Inspector.selectedObject = currentObject;
+                                        InspectorWindow.selectedObject = currentObject;
 
                                     if (ImGui.IsMouseDragging(0, -1) && !s_Dragging)
                                         s_DraggedObject = currentObject;

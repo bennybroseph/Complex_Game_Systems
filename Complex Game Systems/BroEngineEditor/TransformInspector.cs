@@ -6,8 +6,8 @@
 
     using ImGuiNET;
 
-    [CustomEditor(typeof(Transform))]
-    public class TransformEditor : Editor
+    [CustomInspector(typeof(Transform))]
+    public class TransformInspector : Inspector
     {
         public override void OnInspectorGUI()
         {

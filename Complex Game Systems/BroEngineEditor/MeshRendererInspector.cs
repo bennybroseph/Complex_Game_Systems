@@ -3,8 +3,8 @@
     using Geometry;
     using ImGuiNET;
 
-    [CustomEditor(typeof(MeshRenderer<>))]
-    public class MeshRendererEditor : Editor
+    [CustomInspector(typeof(MeshRenderer<>))]
+    public class MeshRendererInspector : Inspector
     {
         public override void OnInspectorGUI()
         {

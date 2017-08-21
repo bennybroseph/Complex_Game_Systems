@@ -8,7 +8,7 @@
 
     using ImGuiUtility;
 
-    internal static class MainMenu
+    internal static class MainMenuBar
     {
         public static float menuHeight;
 

@@ -98,9 +98,10 @@ public class MyGameWindow : GameWindow
 
         //ImGuiOpenTK.drawEvent += new ResizableWindow().DrawGui;
 
-        MainMenu.Init();
-        Inspector.Init();
-        Hierarchy.Init();
+        Editor.Init();
+        MainMenuBar.Init();
+        InspectorWindow.Init();
+        HierarchyWindow.Init();
 
         m_Canvas = new Canvas(this);
 
@@ -231,7 +232,7 @@ public class MyGameWindow : GameWindow
         camera.SetLookAt(new Vector3(0f, 5f, 10f), Vector3.Zero, new Vector3(0f, 1f, 0f));
         m_MainCamera.tag = "Main Camera";
 
-        Inspector.selectedObject = m_MainCamera;
+        InspectorWindow.selectedObject = m_MainCamera;
 
         RenderFrame += OnRenderFrameEvent;
     }

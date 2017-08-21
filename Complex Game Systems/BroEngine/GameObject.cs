@@ -203,10 +203,10 @@
 
         internal void MoveComponent()
         {
-            
+
         }
 
-        internal bool IsComponentRequired(Component requiredComponent)
+        internal bool IsComponentRequired(Component requiredComponent, out Type dependentType)
         {
             var componentType = requiredComponent.GetType();
             foreach (var component in m_Components)
@@ -216,9 +216,13 @@
                 if (requireComponentAttribute == null)
                     continue;
 
-                if (requireComponentAttribute.types.Any(requiredType => requiredType == componentType))
-                    return true;
+                if (requireComponentAttribute.types.All(type => type != componentType))
+                    continue;
+
+                dependentType = component.GetType();
+                return true;
             }
+            dependentType = null;
             return false;
         }
     }

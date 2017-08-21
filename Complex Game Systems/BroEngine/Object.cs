@@ -1,7 +1,10 @@
 ﻿namespace BroEngine
 {
+    using System;
     using System.Collections.Generic;
     using System.Linq;
+
+    using BroEngineEditor;
 
     public class Object
     {
@@ -53,12 +56,26 @@
         public static void Destroy(Object o)
         {
             if (o.GetType() == typeof(Transform))
+            {
+                Editor.ShowMessageBox(
+                    "Can't Remove a Transform Component",
+                    "You cannot remove a transform component from a GameObject",
+                    PopupModalButtons.OK);
+
                 return;
+            }
 
             if (o is Component component)
             {
-                if (component.gameObject.IsComponentRequired(component))
+                if (component.gameObject.IsComponentRequired(component, out Type dependentType))
+                {
+                    Editor.ShowMessageBox(
+                        "Can't Remove Component",
+                        "Can't remove " + component.GetType().Name + " because " + dependentType.Name + " " +
+                        "depends on it",
+                        PopupModalButtons.OK);
                     return;
+                }
 
                 component.gameObject.RemoveComponent(component);
             }
