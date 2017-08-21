@@ -7,6 +7,8 @@ using BroEngineEditor;
 using Geometry;
 using Geometry.Shapes;
 
+using ImGuiNET;
+
 using ImGuiUtility;
 
 using OpenTK;
@@ -96,12 +98,10 @@ public class MyGameWindow : GameWindow
 
         ImGuiOpenTK.Init(this);
 
-        //ImGuiOpenTK.drawEvent += new ResizableWindow().DrawGui;
+        //ImGuiOpenTK.drawGui += new ResizableWindow().DrawGui;
 
         Editor.Init();
         MainMenuBar.Init();
-        InspectorWindow.Init();
-        HierarchyWindow.Init();
 
         m_Canvas = new Canvas(this);
 
@@ -232,7 +232,7 @@ public class MyGameWindow : GameWindow
         camera.SetLookAt(new Vector3(0f, 5f, 10f), Vector3.Zero, new Vector3(0f, 1f, 0f));
         m_MainCamera.tag = "Main Camera";
 
-        InspectorWindow.selectedObject = m_MainCamera;
+        Editor.selectedObject = m_MainCamera;
 
         RenderFrame += OnRenderFrameEvent;
     }
@@ -292,5 +292,12 @@ public class MyGameWindow : GameWindow
         SwapBuffers();
 
         Gizmos.ClearDrawCalls();
+    }
+
+    public override void Exit()
+    {
+        base.Exit();
+
+        ImGui.Shutdown();
     }
 }

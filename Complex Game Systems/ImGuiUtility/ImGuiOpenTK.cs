@@ -18,8 +18,9 @@
 
         private static float s_WheelPosition;
 
-        public delegate void DrawEvent();
-        public static event DrawEvent drawEvent;
+        public static event Action preRender;
+        public static event Action drawGui;
+        public static event Action postRender;
 
         public static void Init(NativeWindow window)
         {
@@ -104,12 +105,15 @@
 
             ImGui.NewFrame();
 
-            drawEvent?.Invoke();
+            preRender?.Invoke();
+            drawGui?.Invoke();
 
             ImGui.Render();
 
             var data = ImGui.GetDrawData();
             RenderImDrawData(data);
+
+            postRender?.Invoke();
         }
 
         private static unsafe void RenderImDrawData(DrawData* draw_data)

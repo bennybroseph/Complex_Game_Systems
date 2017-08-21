@@ -12,7 +12,7 @@
     {
         public static float menuHeight;
 
-        public static void Init() { ImGuiOpenTK.drawEvent += DrawGui; }
+        public static void Init() { ImGuiOpenTK.drawGui += DrawGui; }
 
         public static void DrawGui()
         {
@@ -43,8 +43,8 @@
                     ;
 
                 ImGui.Separator();
-                if (ImGui.MenuItem("Exit"))
-                    MyGameWindow.main.Exit();
+                if (ImGui.MenuItem("Exit", false))
+                    ;
 
                 ImGui.EndMenu();
             }

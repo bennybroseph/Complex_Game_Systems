@@ -1,15 +1,14 @@
 ﻿namespace BroEngineEditor
 {
-    using System;
     using System.Collections.Generic;
     using System.Linq;
     using System.Numerics;
 
+    using BroEngine;
+
     using ImGuiNET;
 
     using ImGuiUtility;
-
-    using Object = BroEngine.Object;
 
     public enum PopupModalButtons
     {
@@ -34,9 +33,19 @@
 
         public static Object s_DraggedObject;
 
+        public static Object selectedObject { get; set; }
+        private static List<InspectorWindow> s_InspectorWindows = new List<InspectorWindow>();
+
+        private static List<HierarchyWindow> s_HierarchyWindows = new List<HierarchyWindow>();
+
         public static void Init()
         {
-            ImGuiOpenTK.drawEvent += DrawGui;
+            ImGuiOpenTK.preRender += OnPreRender;
+            ImGuiOpenTK.drawGui += OnDrawGui;
+            ImGuiOpenTK.postRender += OnPostRender;
+
+            s_InspectorWindows.Add(new InspectorWindow());
+            s_HierarchyWindows.Add(new HierarchyWindow());
         }
 
         public static void ShowMessageBox(
@@ -58,7 +67,12 @@
                 });
         }
 
-        private static void DrawGui()
+        private static void OnPreRender()
+        {
+
+        }
+
+        private static void OnDrawGui()
         {
             var popups = s_PopupModals.ToList();
             foreach (var popupModal in popups)
@@ -124,12 +138,17 @@
                             break;
 
                         default:
-                            throw new ArgumentOutOfRangeException();
+                            throw new System.ArgumentOutOfRangeException();
                     }
 
                     ImGui.EndPopup();
                 }
             }
+        }
+
+        private static void OnPostRender()
+        {
+
         }
 
         private static void ClosePopupModal(PopupModal popupModal, bool result)
