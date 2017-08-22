@@ -1,19 +1,13 @@
 ﻿namespace BroEngineEditor
 {
-    //using System;
     using System.Windows.Forms;
 
     using BroEngine;
-
-    using Geometry.Shapes;
-
     using ImGuiNET;
 
     using ImGuiUtility;
 
     using OpenTK;
-    using OpenTK.Graphics;
-
     using Vector2 = System.Numerics.Vector2;
 
     internal abstract class ResizableWindow : Object
@@ -193,7 +187,7 @@
             ImGuiNative.igSetWindowPos(
                 new Vector2(
                     posDirection.X == 1 ? io.MousePos.X - m_OffsetPos.X : ImGui.GetWindowPosition().X,
-                    posDirection.Y == 1 ? io.MousePos.Y + m_OffsetPos.Y : ImGui.GetWindowPosition().Y),
+                    posDirection.Y == 1 ? io.MousePos.Y - m_OffsetPos.Y : ImGui.GetWindowPosition().Y),
                 SetCondition.Always);
 
             ImGui.SetWindowSize(ImGui.GetWindowSize() + io.MouseDelta * sizeDirection, SetCondition.Always);

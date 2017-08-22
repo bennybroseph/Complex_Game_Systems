@@ -4,17 +4,15 @@
     using System.Numerics;
 
     using BroEngine;
-
+    using Geometry.Shapes;
     using ImGuiNET;
+    using OpenTK.Graphics;
 
     internal class HierarchyWindow : ResizableWindow
     {
-        private GameObject m_DraggedObject;
-        private GameObject m_HoveringObject;
-
-        private bool m_Dragging;
-
         public override string name => "Hierarchy";
+
+        public GameObject placeAbove { get; private set; }
 
         public HierarchyWindow()
         {
@@ -26,7 +24,7 @@
             ImGuiNative.igSetWindowPos(new Vector2(0f, MainMenuBar.menuHeight), SetCondition.Always);
 
             ImGui.SetWindowSize(
-                new Vector2(MyGameWindow.main.Width * 0.15f, MyGameWindow.main.Height * 0.66f), 
+                new Vector2(MyGameWindow.main.Width * 0.15f, MyGameWindow.main.Height * 0.6f),
                 SetCondition.Once);
         }
 
@@ -51,7 +49,7 @@
             }
 
             var indentLevel = 0;
-            foreach (var gameObject in Object.FindObjectsOfType<GameObject>())
+            foreach (var gameObject in FindObjectsOfType<GameObject>())
             {
                 if (gameObject.transform.parent == null)
                 {
@@ -70,20 +68,42 @@
                     {
                         while (currentStack.Count > 0)
                         {
+                            var min =
+                                new Vector2(
+                                    ImGui.GetLastItemRectMin().X,
+                                    ImGui.GetLastItemRectMax().Y);
+                            var max =
+                                new Vector2(
+                                    ImGui.GetWindowContentRegionWidth(),
+                                    ImGui.GetLastItemRectMax().Y + 5f);
+
+                            if (ImGui.IsMouseDragging(0, -1) && ImGui.IsMouseHoveringRect(min, max, false))
+                            {
+                                Editor.hoveredObject = this;
+                                placeAbove = currentObject;
+                                ImGui.Separator();
+                                //Gizmos.DrawRectangle(
+                                //    new OpenTK.Vector2(min.X, min.Y),
+                                //    new OpenTK.Vector2(max.X, max.Y), Color4.White, Color4.White);
+                            }
+
                             var collapsed = false;
-                            var selected = Editor.selectedObject == currentObject;
+                            var selected =
+                                Editor.selectedObject == currentObject ||
+                                Editor.hoveredObject == currentObject;
 
                             //ImGui.PushStyleColor(ColorTarget.HeaderHovered, Vector4.Zero);
                             //ImGui.PushStyleColor(ColorTarget.HeaderActive, Vector4.Zero);
+                            //ImGui.PushStyleColor(ColorTarget.h, Vector4.Zero);
                             if (selected)
                                 ImGuiNative.igPushStyleColor(
                                     ColorTarget.Text,
                                     new Vector4(143f / 255f, 143f / 255f, 200f / 255f, 1f));
 
-                            var flags =
-                                currentObject.transform.childCount > 0
-                                    ? TreeNodeFlags.OpenOnArrow
-                                    : TreeNodeFlags.OpenOnArrow | TreeNodeFlags.Leaf;
+                            var flags = TreeNodeFlags.OpenOnArrow;
+
+                            if (currentObject.transform.childCount <= 0)
+                                flags |= TreeNodeFlags.Leaf;
                             if (selected)
                                 flags |= TreeNodeFlags.Selected;
 
@@ -91,6 +111,20 @@
                             if (selected)
                                 ImGui.PopStyleColor();
                             //ImGui.PopStyleColor();
+
+                            if (ImGui.IsMouseDragging(0, -1) &&
+                                Editor.draggedObject != null &&
+                                ImGui.IsLastItemHoveredRect())
+                                Editor.hoveredObject = currentObject;
+
+                            if (ImGui.IsLastItemActive() && ImGui.IsMouseDragging(0, -1))
+                            {
+                                ImGui.SetTooltip(currentObject.name);
+                                Editor.draggedObject = currentObject;
+                            }
+
+                            if (ImGui.IsLastItemHovered() && ImGui.IsMouseClicked(0))
+                                Editor.selectedObject = currentObject;
 
                             if (ImGui.BeginPopupContextItem("GameObject Context Menu"))
                             {
@@ -102,17 +136,6 @@
 
                             if (collapsed)
                                 ImGui.TreePop();
-
-                            if (ImGuiNative.igIsItemHovered())
-                            {
-                                m_HoveringObject = currentObject;
-
-                                if (ImGui.IsMouseClicked(0))
-                                    Editor.selectedObject = currentObject;
-
-                                if (ImGui.IsMouseDragging(0, -1) && !m_Dragging)
-                                    m_DraggedObject = currentObject;
-                            }
 
                             if (collapsed && currentObject.transform.childCount > 0)
                             {
@@ -154,23 +177,23 @@
                     ImGuiNative.igUnindent();
             }
 
-            if (m_DraggedObject != null)
-            {
-                m_Dragging = true;
-                ImGui.SetTooltip(m_DraggedObject.name);
+            //if (m_DraggedObject != null)
+            //{
+            //    m_Dragging = true;
+            //    ImGui.SetTooltip(m_DraggedObject.name);
 
-                if (!ImGui.IsMouseDown(0) && m_DraggedObject != m_HoveringObject)
-                {
-                    m_DraggedObject.transform.SetParent(m_HoveringObject?.transform);
-                    ImGuiNative.igSetWindowFocus();
-                    m_Dragging = false;
-                }
-            }
-            else if (ImGui.IsWindowFocused())
-                ImGui.SetTooltip("");
+            //    if (!ImGui.IsMouseDown(0) && m_DraggedObject != m_HoveringObject)
+            //    {
+            //        m_DraggedObject.transform.SetParent(m_HoveringObject?.transform);
+            //        ImGuiNative.igSetWindowFocus();
+            //        m_Dragging = false;
+            //    }
+            //}
+            //else if (ImGui.IsWindowFocused())
+            //    ImGui.SetTooltip("");
 
-            if (!m_Dragging)
-                m_DraggedObject = null;
+            //if (!m_Dragging)
+            //    m_DraggedObject = null;
         }
     }
 }

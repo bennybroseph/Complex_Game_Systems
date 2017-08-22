@@ -5,6 +5,8 @@
     using System.Drawing;
     using System.Linq;
     using System.Numerics;
+    using System.Windows.Forms;
+    using BroEngine;
     using ImGuiNET;
 
     using ImGuiUtility;
@@ -32,17 +34,23 @@
         }
         private static List<PopupModal> s_PopupModals = new List<PopupModal>();
 
-        public static Object s_DraggedObject;
+        public static Object draggedObject { get; set; }
+
+        private static bool s_HoveredWasSet;
+        private static Object s_HoveredObject;
+
+        public static Object hoveredObject
+        {
+            get => s_HoveredObject;
+            set { s_HoveredWasSet = value != null; s_HoveredObject = value; }
+        }
 
         public static Object selectedObject { get; set; }
         private static List<InspectorWindow> s_InspectorWindows = new List<InspectorWindow>();
 
         private static List<HierarchyWindow> s_HierarchyWindows = new List<HierarchyWindow>();
 
-        private static Vector2 s_FakeMousePos;
-
-        private static Vector2 s_MousePos;
-        private static Vector2 s_PrevMousePos;
+        private static List<ProjectWindow> s_ProjectWindows = new List<ProjectWindow>();
 
         public static void Init()
         {
@@ -52,6 +60,7 @@
 
             s_InspectorWindows.Add(new InspectorWindow());
             s_HierarchyWindows.Add(new HierarchyWindow());
+            s_ProjectWindows.Add(new ProjectWindow());
         }
 
         public static void ShowMessageBox(
@@ -60,9 +69,6 @@
             PopupModalButtons popupModalButtons,
             ButtonAction buttonAction = null)
         {
-            if (buttonAction == null)
-                buttonAction = result => { };
-
             s_PopupModals.Add(
                 new PopupModal
                 {
@@ -75,77 +81,32 @@
 
         private static void OnPreRender()
         {
-            if (!ImGui.IsAnyItemActive())
-                return;
+            if (ImGui.IsAnyItemActive())
+                WrapCursor();
 
-            var cursorState = Mouse.GetCursorState();
-            if (MyGameWindow.main.Bounds.Contains(cursorState.X, cursorState.Y))
-                return;
+            if (hoveredObject != null && !s_HoveredWasSet)
+                hoveredObject = null;
 
-            if (cursorState.X > MyGameWindow.main.Bounds.Right)
+            if (draggedObject != null)
             {
-                Mouse.SetPosition(MyGameWindow.main.Bounds.Left, cursorState.Y);
+                if (ImGui.IsMouseDragging(0, -1))
+                    Cursor.Current = CanCatch() ? Cursors.Default : Cursors.No;
+                else
+                {
+                    Console.WriteLine(
+                        draggedObject + " was dropped and " + hoveredObject + " should pick it up");
+                    if (hoveredObject is HierarchyWindow)
+                        Console.WriteLine(
+                            "It should be placed above " +
+                            (hoveredObject as HierarchyWindow).placeAbove.name);
 
+                    Catch();
+                    hoveredObject = null;
+                    draggedObject = null;
+                }
             }
-            else if (cursorState.X < MyGameWindow.main.Bounds.Left)
-                Mouse.SetPosition(MyGameWindow.main.Bounds.Right, cursorState.Y);
 
-            if (cursorState.Y > MyGameWindow.main.Bounds.Bottom)
-                Mouse.SetPosition(cursorState.X, MyGameWindow.main.Bounds.Top);
-            else if (cursorState.Y < MyGameWindow.main.Bounds.Top)
-                Mouse.SetPosition(cursorState.X, MyGameWindow.main.Bounds.Bottom);
-
-            cursorState = Mouse.GetCursorState();
-            var windowPoint = MyGameWindow.main.PointToClient(new Point(cursorState.X, cursorState.Y));
-
-            var io = ImGui.GetIO();
-            var scaledPoint =
-                new Vector2(
-                    windowPoint.X / io.DisplayFramebufferScale.X,
-                    windowPoint.Y / io.DisplayFramebufferScale.Y);
-
-            io.MousePosition = scaledPoint - ImGui.GetMouseDragDelta(0, -1);
-            ImGui.ResetMouseDragDelta(0);
-            io.MousePosition = scaledPoint;
-
-            //cursorState = Mouse.GetCursorState();
-            //s_PrevMousePos = new Vector2(cursorState.X, cursorState.Y);
-
-            //var cursorState = Mouse.GetCursorState();
-            //if (!ImGui.IsAnyItemActive())
-            //{
-            //    if (ImGui.GetMouseDragDelta(0, -1) == Vector2.Zero)
-            //    {
-            //        s_FakeMousePos = ImGui.GetMousePos();
-
-            //        s_MousePos = new Vector2(cursorState.X, cursorState.Y);
-            //        s_PrevMousePos = s_MousePos;
-            //    }
-            //    return;
-            //}
-
-            //if (!MyGameWindow.main.Bounds.Contains(cursorState.X, cursorState.Y))
-            //{
-            //    if (cursorState.X > MyGameWindow.main.Bounds.Right)
-            //        Mouse.SetPosition(MyGameWindow.main.Bounds.Left, cursorState.Y);
-            //    else if (cursorState.X < MyGameWindow.main.Bounds.Left)
-            //        Mouse.SetPosition(MyGameWindow.main.Bounds.Right, cursorState.Y);
-
-            //    if (cursorState.Y > MyGameWindow.main.Bounds.Bottom)
-            //        Mouse.SetPosition(cursorState.X, MyGameWindow.main.Bounds.Top);
-            //    else if (cursorState.Y < MyGameWindow.main.Bounds.Top)
-            //        Mouse.SetPosition(cursorState.X, MyGameWindow.main.Bounds.Bottom);
-
-            //    cursorState = Mouse.GetCursorState();
-            //    s_PrevMousePos = new Vector2(cursorState.X, cursorState.Y);
-            //}
-
-            //s_MousePos = new Vector2(cursorState.X, cursorState.Y);
-
-            //s_FakeMousePos += s_MousePos - s_PrevMousePos;
-            //ImGui.GetIO().MousePosition = s_FakeMousePos;
-
-            //s_PrevMousePos = s_MousePos;
+            s_HoveredWasSet = false;
         }
 
         private static void OnDrawGui()
@@ -214,7 +175,7 @@
                             break;
 
                         default:
-                            throw new System.ArgumentOutOfRangeException();
+                            throw new ArgumentOutOfRangeException();
                     }
 
                     ImGui.EndPopup();
@@ -227,12 +188,96 @@
 
         }
 
+        private static void WrapCursor()
+        {
+            var cursorState = Mouse.GetCursorState();
+            if (MyGameWindow.main.Bounds.Contains(cursorState.X, cursorState.Y))
+                return;
+
+            if (cursorState.X > MyGameWindow.main.Bounds.Right)
+            {
+                Mouse.SetPosition(MyGameWindow.main.Bounds.Left, cursorState.Y);
+
+            }
+            else if (cursorState.X < MyGameWindow.main.Bounds.Left)
+                Mouse.SetPosition(MyGameWindow.main.Bounds.Right, cursorState.Y);
+
+            if (cursorState.Y > MyGameWindow.main.Bounds.Bottom)
+                Mouse.SetPosition(cursorState.X, MyGameWindow.main.Bounds.Top);
+            else if (cursorState.Y < MyGameWindow.main.Bounds.Top)
+                Mouse.SetPosition(cursorState.X, MyGameWindow.main.Bounds.Bottom);
+
+            cursorState = Mouse.GetCursorState();
+            var windowPoint = MyGameWindow.main.PointToClient(new Point(cursorState.X, cursorState.Y));
+
+            var io = ImGui.GetIO();
+            var scaledPoint =
+                new Vector2(
+                    windowPoint.X / io.DisplayFramebufferScale.X,
+                    windowPoint.Y / io.DisplayFramebufferScale.Y);
+
+            io.MousePosition = scaledPoint - ImGui.GetMouseDragDelta(0, -1);
+            ImGui.ResetMouseDragDelta(0);
+            io.MousePosition = scaledPoint;
+        }
         private static void ClosePopupModal(PopupModal popupModal, bool result)
         {
-            popupModal.buttonAction(result);
+            popupModal.buttonAction?.Invoke(result);
             ImGui.CloseCurrentPopup();
 
             s_PopupModals.Remove(popupModal);
+        }
+
+        public static bool CanCatch()
+        {
+            if (hoveredObject == draggedObject)
+                return false;
+
+            if ((hoveredObject is GameObject || hoveredObject is HierarchyWindow) &&
+                (draggedObject is GameObject || draggedObject is Transform))
+                return true;
+
+            if (hoveredObject is Component && draggedObject is Component)
+                return true;
+
+            return false;
+        }
+
+        private static void Catch()
+        {
+            if (!CanCatch())
+                return;
+
+            var draggedTransform = draggedObject as Transform;
+            var draggedGameObject = draggedObject as GameObject;
+
+            var hierarchyWindow = hoveredObject as HierarchyWindow;
+            if (hierarchyWindow != null && (draggedGameObject != null || draggedTransform != null))
+            {
+                var gameObject = draggedGameObject ?? draggedTransform.gameObject;
+                Object.SetInList(gameObject, hierarchyWindow.placeAbove);
+                gameObject.transform.SetParent(hierarchyWindow.placeAbove.transform.parent);
+            }
+
+            var hoveredTransform = hoveredObject as Transform;
+
+            var hoveredGameObject = hoveredObject as GameObject;
+
+            if ((hoveredGameObject != null || hoveredTransform != null) &&
+                (draggedGameObject != null || draggedTransform != null))
+            {
+                var parent = hoveredTransform ?? hoveredGameObject.transform;
+                var child = draggedTransform ?? draggedGameObject.transform;
+
+                child.transform.SetParent(parent);
+            }
+
+            var hoveredComponent = hoveredObject as Component;
+            var draggedComponent = draggedObject as Component;
+            if (hoveredComponent != null && draggedComponent != null &&
+                hoveredComponent.gameObject == draggedComponent.gameObject)
+                hoveredComponent.gameObject.SetInList(draggedComponent, hoveredComponent);
+
         }
     }
 }

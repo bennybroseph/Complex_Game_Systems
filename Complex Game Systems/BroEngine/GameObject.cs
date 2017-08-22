@@ -4,7 +4,7 @@
     using System.Collections.Generic;
     using System.Linq;
     using System.Reflection;
-
+    using BroEngineEditor;
     using Geometry;
     using Geometry.Shapes;
 
@@ -152,8 +152,10 @@
             var disallowMultiple = type.GetCustomAttribute<DisallowMultipleComponentAttribute>();
             if (disallowMultiple != null && GetComponent(type) != null)
             {
-                Console.WriteLine(
-                    "The component of type " + type.Name + " does not allow multiple instances");
+                Editor.ShowMessageBox(
+                    "Can't Add the Same Component Multiple Times",
+                    "The component of type " + type.Name + " does not allow multiple instances",
+                    PopupModalButtons.OK);
 
                 return null;
             }
@@ -202,11 +204,6 @@
             m_Components.Remove(component);
         }
 
-        internal void MoveComponent()
-        {
-
-        }
-
         internal bool IsComponentRequired(Component requiredComponent, out Type dependentType)
         {
             var componentType = requiredComponent.GetType();
@@ -225,6 +222,31 @@
             }
             dependentType = null;
             return false;
+        }
+
+        internal void SetInList(Component setObject, Component posObject)
+        {
+            m_Components.Remove(setObject);
+            m_Components.Insert(m_Components.IndexOf(posObject), setObject);
+        }
+
+        internal bool CanMoveUp(Component component) { return m_Components.IndexOf(component) > 0; }
+        internal void MoveUp(Component component)
+        {
+            var oldIndex = m_Components.IndexOf(component);
+            m_Components.Remove(component);
+            m_Components.Insert(oldIndex - 1, component);
+        }
+
+        internal bool CanMoveDown(Component component)
+        {
+            return m_Components.IndexOf(component) < m_Components.Count - 1;
+        }
+        internal void MoveDown(Component component)
+        {
+            var oldIndex = m_Components.IndexOf(component);
+            m_Components.Remove(component);
+            m_Components.Insert(oldIndex + 1, component);
         }
     }
 }

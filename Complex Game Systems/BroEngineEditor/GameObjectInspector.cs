@@ -147,12 +147,10 @@
             }
         }
 
-        private static bool DrawCollapsingHeader(Component component)
+        private bool DrawCollapsingHeader(Component component)
         {
-            if (s_HoveredComponent == component && s_SelectedComponent != s_HoveredComponent)
-            {
+            if (Editor.hoveredObject == component && Editor.draggedObject != Editor.hoveredObject)
                 ImGui.Separator();
-            }
 
             var enabledProperty = component.GetType().GetProperty("enabled");
 
@@ -160,24 +158,21 @@
             var flags = TreeNodeFlags.Framed | TreeNodeFlags.DefaultOpen | TreeNodeFlags.AllowOverlapMode;
             var expanded = ImGui.CollapsingHeader(label, flags);
 
-            if (ImGui.IsMouseDragging(0, -1) && s_SelectedComponent != null)
-            {
-                if (ImGui.IsLastItemHovered())
-                    s_HoveredComponent = component;
-            }
+            if (ImGui.IsMouseDragging(0, -1) && Editor.draggedObject != null && ImGui.IsLastItemHoveredRect())
+                Editor.hoveredObject = component;
 
             if (ImGui.IsLastItemActive() && ImGui.IsMouseDragging(0, -1))
             {
                 ImGui.SetTooltip(component.name);
-                s_SelectedComponent = component;
+                Editor.draggedObject = component;
             }
-            else if (!ImGui.IsMouseDragging(0, -1) &&ImGui.IsLastItemHovered() && s_SelectedComponent != null)
-            {
-                Console.WriteLine(component.name);
-                
-                s_SelectedComponent = null;
-                s_HoveredComponent = null;
-            }
+            //if (drop)
+            //{
+            //    Console.WriteLine(component.name);
+
+            //    s_SelectedComponent = null;
+            //    s_HoveredComponent = null;
+            //}
 
             if (ImGui.BeginPopupContextItem("Component Menu", 1))
             {
@@ -191,12 +186,17 @@
                     ;
 
                 if (ImGui.MenuItem("Remove Component"))
+                {
                     BroEngine.Object.Destroy(component);
 
-                if (ImGui.MenuItem("Move Up", false))
-                    ;
-                if (ImGui.MenuItem("Move Down", false))
-                    ;
+                    ImGui.EndPopup();
+                    return false;
+                }
+
+                if (ImGui.MenuItem("Move Up", component.CanMoveUp()))
+                    component.MoveUp();
+                if (ImGui.MenuItem("Move Down", component.CanMoveDown()))
+                    component.MoveDown();
 
                 if (ImGui.MenuItem("Copy Component", false))
                     ;

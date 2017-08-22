@@ -248,11 +248,11 @@ public class MyGameWindow : GameWindow
         //m_Sun.transform.position =
         //    new Vector3(
         //        m_Sun.transform.position.X - 0.01f, m_Sun.transform.position.Y, m_Sun.transform.position.Z);
-        m_Sun.transform.eulerAngles =
-            new Vector3(
-                m_Sun.transform.eulerAngles.X + 1f,
-                m_Sun.transform.eulerAngles.Y,
-                m_Sun.transform.eulerAngles.Z);
+        //m_Sun.transform.eulerAngles =
+        //    new Vector3(
+        //        m_Sun.transform.eulerAngles.X + 1f,
+        //        m_Sun.transform.eulerAngles.Y,
+        //        m_Sun.transform.eulerAngles.Z);
 
         m_Moon.transform.localScale = new Vector3(7.0f, 1.1f, 1.1f);
         m_Moon.transform.eulerAngles = new Vector3(0f, 0f, 0f);
@@ -273,7 +273,7 @@ public class MyGameWindow : GameWindow
         GL.Clear(ClearBufferMask.ColorBufferBit | ClearBufferMask.DepthBufferBit);
 
         Gizmos.DrawCube(Vector3.Zero, Vector3.One);
-
+        
         foreach (var camera in BroEngine.Camera.allCameras)
         {
             camera.Render();

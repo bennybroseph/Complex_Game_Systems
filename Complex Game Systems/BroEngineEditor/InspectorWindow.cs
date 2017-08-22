@@ -45,7 +45,7 @@
         protected override void PreTryResize()
         {
             ImGuiNative.igSetWindowPos(
-                new Vector2(MyGameWindow.main.Width - ImGui.GetWindowSize().X, MainMenuBar.menuHeight),
+                new Vector2(MyGameWindow.main.Width - ImGui.GetWindowWidth(), MainMenuBar.menuHeight),
                 SetCondition.Always);
 
             ImGui.SetWindowSize(

@@ -49,7 +49,10 @@
                                     baseVertex.position.Z * (float)Math.Cos(phi)),
                             baseVertex.color);
 
-                    vertex.normal = vertex.position;
+                    vertex.normal = vertex.position.Normalized();
+
+                    //vertex.textureUV.X = (float)Math.Asin(vertex.normal.X) / (float)Math.PI + 0.5f;
+                    //vertex.textureUV.X = (float)Math.Asin(vertex.normal.Y) / (float)Math.PI + 0.5f;
 
                     var d = vertex.position.Normalized();
                     vertex.textureUV.X = 0.5f + (float)Math.Atan2(d.Z, d.X) / (2 * (float)Math.PI);

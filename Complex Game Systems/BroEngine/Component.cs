@@ -15,5 +15,11 @@ namespace BroEngine
 
         public T GetComponent<T>() where T : Component => gameObject.GetComponent<T>();
         public IEnumerable<T> GetComponents<T>() where T : Component => gameObject.GetComponents<T>();
+
+        internal bool CanMoveUp() => gameObject.CanMoveUp(this);
+        internal void MoveUp() => gameObject.MoveUp(this);
+
+        internal bool CanMoveDown() => gameObject.CanMoveDown(this);
+        internal void MoveDown() => gameObject.MoveDown(this);
     }
 }

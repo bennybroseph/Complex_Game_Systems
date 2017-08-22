@@ -84,6 +84,12 @@
             s_Objects.Remove(o);
         }
 
+        internal static void SetInList(Object setObject, Object posObject)
+        {
+            s_Objects.Remove(setObject);
+            s_Objects.Insert(s_Objects.IndexOf(posObject), setObject);
+        }
+
         public override string ToString() { return name; }
     }
 }

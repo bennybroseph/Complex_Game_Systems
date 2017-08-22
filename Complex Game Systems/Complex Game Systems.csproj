@@ -106,6 +106,7 @@
     <Compile Include="BroEngineEditor\CustomInspectorAttribute.cs" />
     <Compile Include="BroEngineEditor\Editor.cs" />
     <Compile Include="BroEngineEditor\HierarchyWindow.cs" />
+    <Compile Include="BroEngineEditor\ProjectWindow.cs" />
     <Compile Include="BroEngineEditor\ResizableWindow.cs" />
     <Compile Include="BroEngineEditor\Inspector.cs" />
     <Compile Include="BroEngineEditor\GameObjectInspector.cs" />
